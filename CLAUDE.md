@@ -123,10 +123,12 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
 - Bedrock: writes the parent notice from the plan JSON, and (should-have) reads
   a timetable photo into JSON. Check which vision model is enabled in the region.
 - S3: uploaded timetable photos.
-- Deploy: AWS SAM, template in `infra/`. `forecast` and `plan` are built
-  and tested locally (`sam build -t infra/template.yaml`). NOT deployed yet: the
-  team deploys later. Check the AWS account before deploying; the local CLI
-  profile is user `promptfence-deploy`. API contract: `docs/api.md`.
+- Deploy: AWS SAM, template in `infra/`, settings in `samconfig.toml`.
+  Backend deployed 2026-10-08 as stack `clean-period` in account 373544523000
+  (Ledger Orbit), ap-south-1: API https://6d96lz6fye.execute-api.ap-south-1.amazonaws.com.
+  Redeploy: `sam build -t infra/template.yaml && sam deploy`. CORS is `*` until
+  the Amplify URL exists. Frontend not hosted yet. Bedrock model access not
+  enabled yet, so the live notice is the template. API contract: `docs/api.md`.
 - Notice: `core/notice.py` builds facts and a template notice; the `notice`
   Lambda asks Claude Opus 5.5 on Bedrock (`anthropic.claude-opus-5-5`, global
   endpoint from ap-south-1, so inference may run outside India) to reword it
