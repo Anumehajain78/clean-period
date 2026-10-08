@@ -123,7 +123,10 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
 - Bedrock: writes the parent notice from the plan JSON, and (should-have) reads
   a timetable photo into JSON. Check which vision model is enabled in the region.
 - S3: uploaded timetable photos.
-- Deploy: AWS SAM, template in `infra/`.
+- Deploy: AWS SAM, template in `infra/`. `forecast` and `plan` are built
+  and tested locally (`sam build -t infra/template.yaml`). NOT deployed yet: the
+  team deploys later. Check the AWS account before deploying; the local CLI
+  profile is user `promptfence-deploy`. API contract: `docs/api.md`.
 
 Design rule: AI reads and writes text. Code decides the plan. The plan never
 depends on a model's opinion.
