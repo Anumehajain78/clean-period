@@ -132,15 +132,15 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
   then builds the frontend with the live ApiUrl and publishes it to Amplify.
   GitHub signs in with OIDC to role `github-deploy-clean-period`, created once
   by `infra/github-deploy.yaml` (stack `clean-period-github`, also owns the
-  Amplify app). Live notice uses Opus 4.8; template if the AI text fails the check. API contract: `docs/api.md`.
+  Amplify app). Live notice uses Sonnet 4.6; template if the AI text fails the check. API contract: `docs/api.md`.
 - Notice: `core/notice.py` builds facts and a template notice; the `notice`
-  Lambda asks Claude Opus 4.8 on Bedrock (`anthropic.claude-opus-4-8`, global
-  endpoint from ap-south-1, so inference may run outside India) to reword it.
-  Opus 4.8 because Opus 5.5 is "not available for this account" (checked
-  2026-10-08 in the Bedrock playground); Opus 4.8 is open to all accounts. It
-  and keeps the AI text only if every number in it is in the facts. The SDK is
-  a Lambda layer on that function only; all Lambdas are x86_64 so the layer
-  builds without Docker.
+  Lambda asks Claude Sonnet 4.6 on Bedrock (`global.anthropic.claude-sonnet-4-6`
+  via bedrock-runtime, global profile, so inference may run outside India) to
+  reword it, and keeps the AI text only if every number in it is in the facts.
+  Why Sonnet 4.6: on this account Opus 5.5, Opus 4.8 and Sonnet 5 return "not
+  available for this account" (checked 2026-10-08); Sonnet 4.6, Haiku 4.5 and
+  Claude 3 Haiku work. The SDK is a Lambda layer on that function only; all
+  Lambdas are x86_64 so the layer builds without Docker.
 - Nightly: `schools` Lambda saves timetables (no accounts: a secret edit key,
   stored hashed). `nightly` Lambda runs at 19:00 Asia/Kolkata via a SAM
   `ScheduleV2` event, plans tomorrow for every saved school with
