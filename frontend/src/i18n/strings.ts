@@ -104,8 +104,8 @@ const strings = {
   copy: { en: 'Copy', hi: 'कॉपी करें' },
   copied: { en: 'Copied', hi: 'कॉपी हो गया' },
   noticeByAi: {
-    en: 'Wording by AI (Claude on Amazon Bedrock), checked by code: every number comes from the plan.',
-    hi: 'शब्द AI (Amazon Bedrock पर Claude) ने लिखे, कोड ने जाँचे: हर संख्या योजना से है।',
+    en: 'Wording by AI (Amazon Nova on Amazon Bedrock), checked by code: every number comes from the plan.',
+    hi: 'शब्द AI (Amazon Bedrock पर Amazon Nova) ने लिखे, कोड ने जाँचे: हर संख्या योजना से है।',
   },
   noticeByTemplate: { en: 'Written by code from the plan.', hi: 'योजना से कोड द्वारा लिखी गई।' },
   english: { en: 'English', hi: 'अंग्रेज़ी' },

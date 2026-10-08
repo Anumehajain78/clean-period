@@ -77,16 +77,16 @@ Body: `{"plan": <the POST /plan response>, "school_name": "...", "use_ai": true}
   "en": "Dear parents, ...",
   "hi": "प्रिय अभिभावक, ...",
   "source": "ai | template",
-  "model": "global.anthropic.claude-sonnet-4-6",
+  "model": "apac.amazon.nova-pro-v1:0",
   "fallback_reason": "only when AI text was rejected or failed",
   "facts": {"date": "...", "verdict": "...", "classes": [], "worst_hour": {}, "cleanest_hour": {}},
   "label": "Estimates from a PM2.5 forecast ..."
 }
 ```
 
-Code writes a template notice from the plan's facts. With AI on, Claude on
-Amazon Bedrock rewrites it for tone; the AI text is used only if every number
-and time in it appears in `facts`, otherwise the template comes back with
+Code writes a template notice from the plan's facts. With AI on, Amazon Nova
+Pro on Amazon Bedrock rewrites it for tone; the AI text is used only if every
+number and time in it appears in `facts` and every moved period is kept, otherwise the template comes back with
 `fallback_reason`. The UI shows which one it is.
 
 ## Saved schools and the nightly plan

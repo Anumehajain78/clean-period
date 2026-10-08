@@ -120,8 +120,8 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
 - DynamoDB, single table: School, Timetable, Plan, ForecastCache.
 - EventBridge Scheduler: every evening at 19:00 IST, build tomorrow's plan for
   every saved school.
-- Bedrock: writes the parent notice from the plan JSON, and (should-have) reads
-  a timetable photo into JSON. Check which vision model is enabled in the region.
+- Bedrock: writes the parent notice from the plan JSON (Amazon Nova Pro), and
+  (should-have) reads a timetable photo into JSON. Check which vision model is enabled in the region.
 - S3: uploaded timetable photos.
 - Deploy: AWS SAM, template in `infra/`, settings in `samconfig.toml`.
   Backend deployed 2026-10-08 as stack `clean-period` in account 373544523000
@@ -132,15 +132,16 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
   then builds the frontend with the live ApiUrl and publishes it to Amplify.
   GitHub signs in with OIDC to role `github-deploy-clean-period`, created once
   by `infra/github-deploy.yaml` (stack `clean-period-github`, also owns the
-  Amplify app). Live notice uses Sonnet 4.6; template if the AI text fails the check. API contract: `docs/api.md`.
+  Amplify app). Live notice uses Nova Pro; template if the AI text fails the check. API contract: `docs/api.md`.
 - Notice: `core/notice.py` builds facts and a template notice; the `notice`
-  Lambda asks Claude Sonnet 4.6 on Bedrock (`global.anthropic.claude-sonnet-4-6`
-  via bedrock-runtime, global profile, so inference may run outside India) to
-  reword it, and keeps the AI text only if every number in it is in the facts.
-  Why Sonnet 4.6: on this account Opus 5.5, Opus 4.8 and Sonnet 5 return "not
-  available for this account" (checked 2026-10-08); Sonnet 4.6, Haiku 4.5 and
-  Claude 3 Haiku work. The SDK is a Lambda layer on that function only; all
-  Lambdas are x86_64 so the layer builds without Docker.
+  Lambda asks Amazon Nova Pro on Bedrock (`apac.amazon.nova-pro-v1:0`, Converse
+  API through boto3, APAC profile) to reword it, and keeps the AI text only if
+  every number in it is in the facts and every moved period is still there.
+  Why Nova (decided 2026-10-08): Claude on Bedrock is sold through AWS
+  Marketplace, and this account cannot complete the subscription
+  (INVALID_PAYMENT_INSTRUMENT; Opus 5.5, Opus 4.8 and Sonnet 5 are also "not
+  available for this account"). Nova is sold by AWS, so credits apply and no
+  Marketplace subscription is needed. No extra Python dependency or layer.
 - Nightly: `schools` Lambda saves timetables (no accounts: a secret edit key,
   stored hashed). `nightly` Lambda runs at 19:00 Asia/Kolkata via a SAM
   `ScheduleV2` event, plans tomorrow for every saved school with
