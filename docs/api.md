@@ -77,7 +77,7 @@ Body: `{"plan": <the POST /plan response>, "school_name": "...", "use_ai": true}
   "en": "Dear parents, ...",
   "hi": "प्रिय अभिभावक, ...",
   "source": "ai | template",
-  "model": "anthropic.claude-opus-5-5",
+  "model": "anthropic.claude-opus-4-8",
   "fallback_reason": "only when AI text was rejected or failed",
   "facts": {"date": "...", "verdict": "...", "classes": [], "worst_hour": {}, "cleanest_hour": {}},
   "label": "Estimates from a PM2.5 forecast ..."

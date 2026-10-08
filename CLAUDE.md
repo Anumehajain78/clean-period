@@ -132,11 +132,12 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
   then builds the frontend with the live ApiUrl and publishes it to Amplify.
   GitHub signs in with OIDC to role `github-deploy-clean-period`, created once
   by `infra/github-deploy.yaml` (stack `clean-period-github`, also owns the
-  Amplify app). Bedrock model access not enabled yet, so the live notice is the
-  template. API contract: `docs/api.md`.
+  Amplify app). Live notice uses Opus 4.8; template if the AI text fails the check. API contract: `docs/api.md`.
 - Notice: `core/notice.py` builds facts and a template notice; the `notice`
-  Lambda asks Claude Opus 5.5 on Bedrock (`anthropic.claude-opus-5-5`, global
-  endpoint from ap-south-1, so inference may run outside India) to reword it
+  Lambda asks Claude Opus 4.8 on Bedrock (`anthropic.claude-opus-4-8`, global
+  endpoint from ap-south-1, so inference may run outside India) to reword it.
+  Opus 4.8 because Opus 5.5 is "not available for this account" (checked
+  2026-10-08 in the Bedrock playground); Opus 4.8 is open to all accounts. It
   and keeps the AI text only if every number in it is in the facts. The SDK is
   a Lambda layer on that function only; all Lambdas are x86_64 so the layer
   builds without Docker.
