@@ -1,0 +1,2 @@
+# Lambda layer for the notice function only.
+anthropic[bedrock]==1.12.1

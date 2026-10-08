@@ -11,7 +11,7 @@ Parameters:
 Globals:
   Function:
     Runtime: python3.12
-    Architectures: [arm64]
+    Architectures: [x86_64]
     CodeUri: ../backend
     MemorySize: 256
     Timeout: 25
@@ -65,6 +65,38 @@ Resources:
         Post:
           Type: HttpApi
           Properties: {ApiId: !Ref Api, Path: /plan, Method: POST}
+
+  # Anthropic SDK, attached only to NoticeFunction. x86_64 so pip wheels built on
+  # this machine match the Lambda runtime without Docker.
+  AnthropicLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: layers/anthropic
+      CompatibleRuntimes: [python3.12]
+      CompatibleArchitectures: [x86_64]
+    Metadata:
+      BuildMethod: python3.12
+      BuildArchitecture: x86_64
+
+  NoticeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.notice.app.handler
+      Timeout: 28           # HTTP API integrations time out at 30 s
+      Layers: [!Ref AnthropicLayer]
+      Environment:
+        Variables:
+          NOTICE_USE_AI: "1"
+          NOTICE_MODEL: anthropic.claude-opus-5-5
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: bedrock-mantle:CreateInference
+              Resource: "*"
+      Events:
+        Post:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /notice, Method: POST}
 
 Outputs:
   ApiUrl:
