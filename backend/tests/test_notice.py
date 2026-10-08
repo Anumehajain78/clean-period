@@ -165,3 +165,23 @@ def test_template_names_the_plan_date():
     n = notice.template(notice.facts(make_plan(DIRTY_MORNING), SCHOOL))
     assert "Monday, 12 October 2026" in n["en"]
     assert "सोमवार, 12 अक्टूबर 2026" in n["hi"]
+
+
+def test_check_rejects_a_dropped_move(f):
+    bad = good(f)
+    bad["hi"] = f"प्रिय अभिभावक, अनुमानित कमी {f['classes'][0]['reduction_pct']}%।"
+    problems = notice.check(bad, f)
+    assert any("08:00" in p and "hi" in p for p in problems)
+
+
+def test_check_rejects_missing_indoor_subject_on_bad_day():
+    f = notice.facts(make_plan({h: 300.0 for h in range(7, 14)}), SCHOOL)
+    pct = f["classes"][0]["reduction_pct"]
+    bad = {"en": f"All outdoor periods move indoors. Cut about {pct}%.",
+           "hi": f"सभी बाहर के पीरियड अंदर होंगे। लगभग {pct}%।"}
+    assert notice.check(bad, f) == []          # subjects may be summarised as "all outdoor periods"
+
+
+def test_prompt_asks_to_keep_date_air_and_moves(f):
+    system, _ = notice.prompt(f, notice.template(f))
+    assert "date" in system and "PM2.5" in system and "every moved period" in system
