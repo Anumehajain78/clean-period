@@ -157,6 +157,10 @@ def check(notice, f):
         for token in _NUMBER.findall(plain):
             if _canon(token) not in allowed:
                 problems.append(f"{lang}: number {token} is not in the facts")
+        for cls in f["classes"]:
+            for m in cls["moves"]:
+                if m["from"] not in plain or m["to"] not in plain:
+                    problems.append(f"{lang}: missing move of {m['subject']} from {m['from']} to {m['to']}")
         if needs_pct:
             for cls in f["classes"]:
                 if f"{cls['reduction_pct']}%" not in plain.replace(" %", "%"):
@@ -167,7 +171,9 @@ def check(notice, f):
 SYSTEM = """You write short notices from a school to parents in India, in English and in Hindi.
 Use only the facts provided. Do not add any number, time, date, health claim or advice that is not in the facts.
 Keep every time in HH:MM form and every percentage exactly as given, with the % sign.
+Keep the date, the PM2.5 values with their times, and every moved period with its old and new time.
 Say that the numbers are estimates, and that this reduces exposure but does not make a polluted day safe.
+Use short paragraphs, with each moved period on its own line; inside the JSON strings write line breaks as \\n.
 Keep each language under 120 words, warm and plain.
 Reply with only a JSON object: {"en": "<English notice>", "hi": "<Hindi notice in Devanagari>"}"""
 

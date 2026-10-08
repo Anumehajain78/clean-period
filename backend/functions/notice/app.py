@@ -3,9 +3,10 @@
 Body: {"plan": <POST /plan response>, "school_name": "...", "use_ai"?: true}
 
 Returns the parent notice in English and Hindi. Code writes a template from
-the plan's facts. If AI is on, Claude Sonnet 4.6 (Amazon Bedrock) rewrites it for tone;
-the AI text is used only if every number in it comes from the facts,
-otherwise the template is returned with the reason.
+the plan's facts. If AI is on, Amazon Nova Pro (Amazon Bedrock, Converse API)
+rewrites it for tone; the AI text is used only if every number in it comes from
+the facts and every moved period is still there, otherwise the template is
+returned with the reason.
 """
 
 import os
@@ -14,9 +15,9 @@ import time
 from core import labels, notice
 from functions.common.http import BadRequest, error, json_body, respond
 
-# Newer Claude models are "not available for this account" on our AWS account
-# (checked 2026-10-08); Sonnet 4.6 is the strongest one it can call.
-DEFAULT_MODEL = "global.anthropic.claude-sonnet-4-6"
+# Amazon's own model: sold by AWS, so no Marketplace subscription and credits apply.
+# Claude needs a Marketplace subscription, which this account cannot complete.
+DEFAULT_MODEL = "apac.amazon.nova-pro-v1:0"
 
 
 class NoticeAIError(Exception):
@@ -25,16 +26,15 @@ class NoticeAIError(Exception):
 
 def ai_notice(f, draft, client, model):
     system, user = notice.prompt(f, draft)
-    msg = client.messages.create(
-        model=model,
-        max_tokens=16000,
-        system=system,
-        messages=[{"role": "user", "content": user}],
-        output_config={"effort": "low"},
+    r = client.converse(
+        modelId=model,
+        system=[{"text": system}],
+        messages=[{"role": "user", "content": [{"text": user}]}],
+        inferenceConfig={"maxTokens": 2000, "temperature": 0.3},
     )
-    if msg.stop_reason in ("refusal", "max_tokens"):
-        raise NoticeAIError(f"model stopped with {msg.stop_reason}")
-    text = "".join(b.text for b in msg.content if b.type == "text")
+    if r["stopReason"] != "end_turn":
+        raise NoticeAIError(f"model stopped with {r['stopReason']}")
+    text = "".join(b.get("text", "") for b in r["output"]["message"]["content"])
     try:
         out = notice.parse_ai(text)
     except ValueError as e:
@@ -47,8 +47,8 @@ def ai_notice(f, draft, client, model):
 
 def _ai_errors():
     try:
-        import anthropic
-        return (NoticeAIError, anthropic.APIStatusError, anthropic.APIConnectionError)
+        from botocore.exceptions import BotoCoreError, ClientError
+        return (NoticeAIError, ClientError, BotoCoreError)
     except ImportError:
         return (NoticeAIError,)
 
@@ -80,12 +80,11 @@ def handle(event, client, model):
 def _client():
     if os.environ.get("NOTICE_USE_AI", "1") != "1":
         return None
-    try:
-        from anthropic import AnthropicBedrock
-    except ImportError:
-        return None
+    import boto3
+    from botocore.config import Config
     # 15 s and no retry: API Gateway gives up at 30 s, and the template covers a failure.
-    return AnthropicBedrock(aws_region=os.environ.get("AWS_REGION"), timeout=15, max_retries=0)
+    return boto3.client("bedrock-runtime", config=Config(
+        connect_timeout=5, read_timeout=15, retries={"total_max_attempts": 1}))
 
 
 _CLIENT = None
