@@ -13,7 +13,7 @@ import os
 from core import labels, notice
 from functions.common.http import BadRequest, error, json_body, respond
 
-DEFAULT_MODEL = "anthropic.claude-opus-5-5"
+DEFAULT_MODEL = "anthropic.claude-opus-4-8"
 
 
 class NoticeAIError(Exception):

@@ -96,7 +96,7 @@ Resources:
       Environment:
         Variables:
           NOTICE_USE_AI: "1"
-          NOTICE_MODEL: anthropic.claude-opus-5-5
+          NOTICE_MODEL: anthropic.claude-opus-4-8
       Policies:
         - Statement:
             - Effect: Allow
