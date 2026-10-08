@@ -68,6 +68,27 @@ Response:
 
 The UI must show `label`, `assumptions` and `air.source` next to the numbers.
 
+## POST /notice
+
+Body: `{"plan": <the POST /plan response>, "school_name": "...", "use_ai": true}`
+
+```json
+{
+  "en": "Dear parents, ...",
+  "hi": "प्रिय अभिभावक, ...",
+  "source": "ai | template",
+  "model": "anthropic.claude-opus-5-5",
+  "fallback_reason": "only when AI text was rejected or failed",
+  "facts": {"date": "...", "verdict": "...", "classes": [], "worst_hour": {}, "cleanest_hour": {}},
+  "label": "Estimates from a PM2.5 forecast ..."
+}
+```
+
+Code writes a template notice from the plan's facts. With AI on, Claude on
+Amazon Bedrock rewrites it for tone; the AI text is used only if every number
+and time in it appears in `facts`, otherwise the template comes back with
+`fallback_reason`. The UI shows which one it is.
+
 ## Backtest data
 
 `data/backtest_result.json` (from `scripts/backtest.py`), static, for the
@@ -78,3 +99,5 @@ backtest screen: `summary`, `days`, `skipped`, `hourly_profile`, `sources`,
 
     cd backend && ../.venv/bin/pytest
     sam build -t infra/template.yaml
+    python scripts/local_api.py                   # AI notice off
+    NOTICE_USE_AI=1 python scripts/local_api.py   # AI notice on: calls Amazon Bedrock

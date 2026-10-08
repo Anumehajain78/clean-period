@@ -107,3 +107,12 @@ export interface BacktestResult {
   }
   hourly_profile: { hour: number; median_pm25: number; days: number }[]
 }
+
+export interface NoticeResponse {
+  en: string
+  hi: string
+  source: 'ai' | 'template'
+  model?: string
+  fallback_reason?: string
+  label: string
+}

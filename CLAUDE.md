@@ -127,6 +127,12 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
   and tested locally (`sam build -t infra/template.yaml`). NOT deployed yet: the
   team deploys later. Check the AWS account before deploying; the local CLI
   profile is user `promptfence-deploy`. API contract: `docs/api.md`.
+- Notice: `core/notice.py` builds facts and a template notice; the `notice`
+  Lambda asks Claude Opus 5.5 on Bedrock (`anthropic.claude-opus-5-5`, global
+  endpoint from ap-south-1, so inference may run outside India) to reword it
+  and keeps the AI text only if every number in it is in the facts. The SDK is
+  a Lambda layer on that function only; all Lambdas are x86_64 so the layer
+  builds without Docker.
 
 Design rule: AI reads and writes text. Code decides the plan. The plan never
 depends on a model's opinion.

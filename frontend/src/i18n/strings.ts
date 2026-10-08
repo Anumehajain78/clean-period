@@ -49,6 +49,20 @@ const strings = {
   airTomorrow: { en: 'Air during school hours (PM2.5, µg/m³)', hi: 'स्कूल के समय की हवा (PM2.5, µg/m³)' },
   dose: { en: 'Inhaled PM2.5', hi: 'साँस में गया PM2.5' },
 
+  noticeTitle: { en: 'Notice for parents', hi: 'अभिभावकों के लिए सूचना' },
+  makeNotice: { en: 'Write parent notice', hi: 'अभिभावक सूचना लिखें' },
+  writing: { en: 'Writing…', hi: 'लिखी जा रही है…' },
+  noticeError: { en: 'Could not write the notice', hi: 'सूचना नहीं लिखी जा सकी' },
+  copy: { en: 'Copy', hi: 'कॉपी करें' },
+  copied: { en: 'Copied', hi: 'कॉपी हो गया' },
+  noticeByAi: {
+    en: 'Wording by AI (Claude on Amazon Bedrock), checked by code: every number comes from the plan.',
+    hi: 'शब्द AI (Amazon Bedrock पर Claude) ने लिखे, कोड ने जाँचे: हर संख्या योजना से है।',
+  },
+  noticeByTemplate: { en: 'Written by code from the plan.', hi: 'योजना से कोड द्वारा लिखी गई।' },
+  english: { en: 'English', hi: 'अंग्रेज़ी' },
+  hindi: { en: 'Hindi', hi: 'हिंदी' },
+
   backtestTitle: { en: 'Last winter, replayed', hi: 'पिछली सर्दी, दोबारा जाँची' },
   backtestSub: { en: 'Sample timetable, real air data', hi: 'नमूना समय-सारणी, असली हवा का डेटा' },
   seasonCut: { en: 'season dose cut', hi: 'पूरे मौसम में खुराक में कमी' },
