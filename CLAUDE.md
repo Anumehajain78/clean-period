@@ -31,17 +31,24 @@ cleanest hours.
 
 - exposure_factor: 1.0 outdoors, INDOOR_FACTOR indoors. Default 0.7. This is an
   assumption, keep it configurable and label it in the UI.
-- Inhalation rates for ages 6 to 11, in m3/min. Starting values, VERIFY against
-  the US EPA Exposure Factors Handbook, Chapter 6, before the demo:
-  sedentary 0.0048, light 0.011, moderate 0.022, high 0.042.
+- Inhalation rates for ages 6 to <11, in m3/min: sedentary 0.0048, light 0.011,
+  moderate 0.022, high 0.042. Verified 2026-10-08: these are the means in US EPA
+  Exposure Factors Handbook (2011), Chapter 6, Table 6-2.
+  https://www.epa.gov/sites/production/files/2015-09/documents/efh-chapter06.pdf
 - Activity mapping: classroom = sedentary, indoors. Assembly = light, outdoors.
   Recess = moderate, outdoors. PE and sports = high, outdoors. Indoor activity
   (yoga, board games) = light, indoors.
 - All of the above lives in `backend/config/dose_config.json`. Never hard-code.
 - Bad-day rule: if no school hour is below the "all indoors" PM2.5 threshold,
   the plan is "all outdoor periods become indoor activity". Thresholds follow
-  CPCB PM2.5 categories (VERIFY the breakpoints). They are defined for 24-hour
-  averages, so using them on hourly values is an approximation. Say so.
+  CPCB National AQI (2014) PM2.5 categories, 24-hour average, ug/m3: Good 0-30,
+  Satisfactory 31-60, Moderate 61-90, Poor 91-120, Very Poor 121-250,
+  Severe above 250. Verified 2026-10-08 from the IMD AQI SOP, Table 3.1
+  (https://mausam.imd.gov.in/imd_latest/contents/pdf/emrc_sop.pdf), with the
+  30/60 edges confirmed in a CPCB bulletin. The original CPCB 2014 report could
+  not be fetched. The categories are defined for 24-hour averages, and IMD says
+  AQI is "not on hourly concentration", so applying them to hourly values is
+  an approximation. Say so.
 
 ## Optimiser
 
