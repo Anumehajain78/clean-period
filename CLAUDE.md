@@ -39,8 +39,10 @@ cleanest hours.
   Recess = moderate, outdoors. PE and sports = high, outdoors. Indoor activity
   (yoga, board games) = light, indoors.
 - All of the above lives in `backend/config/dose_config.json`. Never hard-code.
-- Bad-day rule: if no school hour is below the "all indoors" PM2.5 threshold,
-  the plan is "all outdoor periods become indoor activity". Thresholds follow
+- Bad-day rule: if no school hour is at or below the "all indoors" PM2.5
+  threshold, the plan is "all outdoor periods become indoor activity". The
+  threshold is 120 ug/m3, the top of Poor, so the rule triggers when every
+  school hour is Very Poor or worse (decided 2026-10-08). Thresholds follow
   CPCB National AQI (2014) PM2.5 categories, 24-hour average, ug/m3: Good 0-30,
   Satisfactory 31-60, Moderate 61-90, Poor 91-120, Very Poor 121-250,
   Severe above 250. Verified 2026-10-08 from the IMD AQI SOP, Table 3.1
@@ -58,7 +60,8 @@ ground), movable (true or false).
 Constraints:
 - A teacher cannot be in two classes at once.
 - The ground holds at most N classes at once (configurable).
-- Fixed periods (lunch, exams) never move.
+- Fixed periods (lunch, exams) never move. Assembly and recess are whole-school
+  slots and are fixed too. Only the bad-day rule moves them indoors.
 - Every class keeps exactly the same set of periods, only the order changes.
 
 Objective: minimise total dose across all classes.
@@ -69,11 +72,17 @@ OR-Tools CP-SAT.
 
 ## Backtest (this is our proof)
 
-`scripts/backtest.py` takes one real school timetable and real hourly PM2.5 for
+`scripts/backtest.py` takes the school timetable and real hourly PM2.5 for
 last winter (Nov 2025 to Jan 2026). For every school day it computes the dose
 with the original and the optimised timetable, and writes the season-average
-reduction plus chart data for the UI. Real data only, never synthetic. Show the
-data source on screen.
+reduction plus chart data for the UI. Air data is real only, never synthetic.
+Show the data source on screen.
+
+The timetable is `data/sample_timetable.json` (Class VI-B), transcribed from
+`data/class6_timetable.png`. It is a SAMPLE timetable, not the real timetable of
+any school. Location: Chinmaya Vidyalaya, Vasant Vihar, New Delhi (28.5629,
+77.1678). The UI, README and demo must say "sample timetable, real air data".
+Swap in a real timetable if we get one.
 
 ## Data source
 
