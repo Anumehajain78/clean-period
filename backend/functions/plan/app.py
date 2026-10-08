@@ -9,25 +9,9 @@ doses, the verdict, hourly air quality for school hours, sources and labels.
 The plan comes from code only; no model is involved.
 """
 
-from core import dose, labels, optimiser, thresholds
+from core import dose, planning
 from functions.common import forecast as fc
 from functions.common.http import BadRequest, coords, error, json_body, respond
-
-
-def _air(slots, hourly, forecast, config):
-    hours = thresholds.school_hours(slots)
-    return {
-        "hours": [{"hour": h, "pm25": hourly[h],
-                   "category": thresholds.pm25_category(hourly[h], config) if hourly[h] is not None else None}
-                  for h in hours],
-        "unit": "μg/m³",
-        "source": forecast["source"],
-        "grid_point": forecast["grid_point"],
-        "fetched_at": forecast["fetched_at"],
-        "cached": forecast["cached"],
-        "category_source": config["pm25_categories"]["source"],
-        "category_note": config["pm25_categories"]["note"],
-    }
 
 
 def handle(event, get_forecast, config, now=None):
@@ -44,25 +28,15 @@ def handle(event, get_forecast, config, now=None):
         if day not in forecast["days"]:
             raise BadRequest(f"no forecast for {day}; available: {', '.join(forecast['days'])}")
         hourly = dict(enumerate(forecast["days"][day]))
-
-        plan = optimiser.plan_day(slots, classes, hourly, config,
-                                  ground_capacity=school.get("ground_capacity"))
-        air = _air(slots, hourly, forecast, config)
+        result = planning.plan_response(day, slots, classes, hourly, forecast, config,
+                                        ground_capacity=school.get("ground_capacity"))
     except (BadRequest, ValueError, KeyError, TypeError) as e:
         msg = str(e) if not isinstance(e, KeyError) else f"missing field {e}"
         return error(400, msg)
     except fc.UpstreamError as e:
         return error(502, str(e))
 
-    return respond(200, {
-        "date": day,
-        **plan,
-        "air": air,
-        "assumptions": labels.assumptions(config),
-        "assumptions_hi": labels.assumptions_hi(config),
-        "label": labels.ESTIMATE_LABEL,
-        "label_hi": labels.ESTIMATE_LABEL_HI,
-    })
+    return respond(200, result)
 
 
 _CONFIG = dose.load_config()
