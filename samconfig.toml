@@ -7,7 +7,7 @@ s3_prefix = "clean-period"
 region = "ap-south-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "AllowedOrigin=\"*\""
+parameter_overrides = "AllowedOrigin=\"https://main.d32sdayd4hpv2r.amplifyapp.com\""
 image_repositories = []
 
 [default.global.parameters]

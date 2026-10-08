@@ -126,9 +126,14 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
 - Deploy: AWS SAM, template in `infra/`, settings in `samconfig.toml`.
   Backend deployed 2026-10-08 as stack `clean-period` in account 373544523000
   (Ledger Orbit), ap-south-1: API https://6d96lz6fye.execute-api.ap-south-1.amazonaws.com.
-  Redeploy: `sam build -t infra/template.yaml && sam deploy`. CORS is `*` until
-  the Amplify URL exists. Frontend not hosted yet. Bedrock model access not
-  enabled yet, so the live notice is the template. API contract: `docs/api.md`.
+  Site: https://main.d32sdayd4hpv2r.amplifyapp.com (Amplify app d32sdayd4hpv2r,
+  manual-deploy app, no Amplify GitHub connection). CORS allows only that site.
+  Every push to main runs `.github/workflows/deploy.yml`: tests, `sam deploy`,
+  then builds the frontend with the live ApiUrl and publishes it to Amplify.
+  GitHub signs in with OIDC to role `github-deploy-clean-period`, created once
+  by `infra/github-deploy.yaml` (stack `clean-period-github`, also owns the
+  Amplify app). Bedrock model access not enabled yet, so the live notice is the
+  template. API contract: `docs/api.md`.
 - Notice: `core/notice.py` builds facts and a template notice; the `notice`
   Lambda asks Claude Opus 5.5 on Bedrock (`anthropic.claude-opus-5-5`, global
   endpoint from ap-south-1, so inference may run outside India) to reword it
