@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Clean Period - forecast and plan API (ap-south-1)
+
+Parameters:
+  AllowedOrigin:
+    Type: String
+    Default: "*"
+    Description: Frontend origin allowed by CORS. Set to the Amplify URL once it exists.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Architectures: [arm64]
+    CodeUri: ../backend
+    MemorySize: 256
+    Timeout: 25
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref Table
+
+Resources:
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: [!Ref AllowedOrigin]
+        AllowMethods: [GET, POST, OPTIONS]
+        AllowHeaders: [content-type]
+
+  # Single table: School, Timetable, Plan, ForecastCache. Keys pk/sk.
+  # Items with expires_at (epoch seconds) are removed by DynamoDB TTL.
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - {AttributeName: pk, AttributeType: S}
+        - {AttributeName: sk, AttributeType: S}
+      KeySchema:
+        - {AttributeName: pk, KeyType: HASH}
+        - {AttributeName: sk, KeyType: RANGE}
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+
+  ForecastFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.forecast.app.handler
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref Table}
+      Events:
+        Get:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /forecast, Method: GET}
+
+  PlanFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.plan.app.handler
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref Table}
+      Events:
+        Post:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /plan, Method: POST}
+
+Outputs:
+  ApiUrl:
+    Description: Base URL of the HTTP API
+    Value: !Sub "https://${Api}.execute-api.${AWS::Region}.amazonaws.com"
+  TableName:
+    Value: !Ref Table
