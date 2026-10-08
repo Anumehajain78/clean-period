@@ -173,9 +173,12 @@ Use only the facts provided. Do not add any number, time, date, health claim or 
 Keep every time in HH:MM form and every percentage exactly as given, with the % sign.
 Keep the date, the PM2.5 values with their times, and every moved period with its old and new time.
 Say that the numbers are estimates, and that this reduces exposure but does not make a polluted day safe.
-Use short paragraphs, with each moved period on its own line; inside the JSON strings write line breaks as \\n.
-Keep each language under 120 words, warm and plain.
-Reply with only a JSON object: {"en": "<English notice>", "hi": "<Hindi notice in Devanagari>"}"""
+Use short paragraphs, with each moved period on its own line. Keep each language under 120 words, warm and plain.
+Reply in exactly this format, with nothing else:
+[EN]
+<English notice>
+[HI]
+<Hindi notice in Devanagari script>"""
 
 
 def prompt(f, draft):
@@ -186,11 +189,24 @@ def prompt(f, draft):
     return SYSTEM, user
 
 
+_SECTIONS = re.compile(r"\[EN\]\s*\n(?P<en>.*?)\n\s*\[HI\]\s*\n(?P<hi>.*)", re.S)
+
+
 def parse_ai(text):
-    """Model reply -> {"en", "hi"}. Raises ValueError if it is not that JSON."""
+    """Model reply -> {"en", "hi"}. Expects [EN] and [HI] sections (JSON also accepted).
+
+    Plain sections, not JSON: inside JSON strings some models write Hindi as
+    \\u escape codes, which costs about six tokens per letter.
+    """
+    m = _SECTIONS.search(text)
+    if m:
+        out = {"en": m.group("en").strip(), "hi": m.group("hi").strip()}
+        if not out["en"] or not out["hi"]:
+            raise ValueError("reply has an empty [EN] or [HI] section")
+        return out
     start, end = text.find("{"), text.rfind("}")
     if start < 0 or end < start:
-        raise ValueError("no JSON object in reply")
+        raise ValueError("reply has no [EN]/[HI] sections")
     try:
         obj = json.loads(text[start:end + 1])
     except json.JSONDecodeError as e:

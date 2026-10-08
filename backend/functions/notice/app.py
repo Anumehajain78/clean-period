@@ -38,7 +38,7 @@ def ai_notice(f, draft, client, model):
     try:
         out = notice.parse_ai(text)
     except ValueError as e:
-        raise NoticeAIError(f"reply was not the expected JSON: {e}") from None
+        raise NoticeAIError(f"reply was not in the expected format: {e}") from None
     problems = notice.check(out, f)
     if problems:
         raise NoticeAIError("; ".join(problems[:3]))

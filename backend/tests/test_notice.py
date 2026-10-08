@@ -143,12 +143,27 @@ def test_prompt_contains_facts_and_draft(f):
     system, user = notice.prompt(f, notice.template(f))
     assert "only the facts" in system.lower()
     assert "does not make a polluted day safe" in system
-    assert '"en"' in system and '"hi"' in system
+    assert "[EN]" in system and "[HI]" in system
     assert json.dumps(f, ensure_ascii=False) in user
     assert notice.template(f)["en"] in user
 
 
-def test_parse_ai_json():
+def test_parse_ai_sections():
+    reply = "[EN]\nDear parents,\nPE moves.\n[HI]\nप्रिय अभिभावक,\nखेल।\n"
+    assert notice.parse_ai(reply) == {"en": "Dear parents,\nPE moves.", "hi": "प्रिय अभिभावक,\nखेल।"}
+
+
+def test_parse_ai_sections_ignores_text_around_them():
+    reply = "Here it is:\n[EN]\nA\n[HI]\nB"
+    assert notice.parse_ai(reply) == {"en": "A", "hi": "B"}
+
+
+def test_parse_ai_rejects_empty_section():
+    with pytest.raises(ValueError):
+        notice.parse_ai("[EN]\nA\n[HI]\n   ")
+
+
+def test_parse_ai_json_still_accepted():
     assert notice.parse_ai('{"en": "a", "hi": "b"}') == {"en": "a", "hi": "b"}
     assert notice.parse_ai('```json\n{"en": "a", "hi": "b"}\n```') == {"en": "a", "hi": "b"}
     with pytest.raises(ValueError):

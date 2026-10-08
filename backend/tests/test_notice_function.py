@@ -42,7 +42,7 @@ def body(resp):
 
 
 def test_ai_notice_used_when_it_passes_the_check():
-    client = FakeBedrock(reply=json.dumps(GOOD_AI, ensure_ascii=False))
+    client = FakeBedrock(reply=f"[EN]\n{GOOD_AI['en']}\n[HI]\n{GOOD_AI['hi']}")
     b = body(app.handle(event(), client, MODEL))
     assert b["source"] == "ai" and b["model"] == MODEL
     assert b["en"] == GOOD_AI["en"] and b["hi"] == GOOD_AI["hi"]
@@ -72,7 +72,7 @@ def client_error(code, message):
 
 
 @pytest.mark.parametrize("kw,reason", [
-    ({"reply": "Here you go!"}, "JSON"),
+    ({"reply": "Here you go!"}, "expected format"),
     ({"reply": "{}", "stop_reason": "content_filtered"}, "content_filtered"),
     ({"reply": "{", "stop_reason": "max_tokens"}, "max_tokens"),
     ({"error": client_error("AccessDeniedException", "no access")}, "AccessDenied"),
