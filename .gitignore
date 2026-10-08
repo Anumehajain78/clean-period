@@ -22,3 +22,6 @@ samconfig.toml.bak
 .vscode/
 .idea/
 .DS_Store
+
+# Local Claude Code launch config (machine-specific paths)
+.claude/

@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+:root {
+  font-family: system-ui, "Noto Sans", "Noto Sans Devanagari", sans-serif;
+  color-scheme: light;
+}
+
+body {
+  @apply bg-stone-50 text-stone-900 antialiased;
+}
