@@ -1,0 +1,104 @@
+# On every push to main: test, deploy the backend (SAM), then build and
+# publish the frontend to Amplify. AWS access is through OIDC (no stored keys);
+# the role and Amplify app come from infra/github-deploy.yaml.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ap-south-1
+  AWS_ROLE_ARN: arn:aws:iam::373544523000:role/github-deploy-clean-period
+  STACK_NAME: clean-period
+  AMPLIFY_APP_ID: d32sdayd4hpv2r
+  AMPLIFY_BRANCH: main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r backend/requirements-dev.txt
+      - name: Backend tests
+        working-directory: backend
+        run: python -m pytest -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Frontend type check and build
+        run: |
+          npm ci --prefix frontend
+          npm --prefix frontend run build
+
+  backend:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: sam build -t infra/template.yaml
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+
+  frontend:
+    needs: backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Build with the live API URL
+        run: |
+          API_URL=$(aws cloudformation describe-stacks --stack-name "$STACK_NAME" \
+            --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
+          echo "API: $API_URL"
+          npm ci --prefix frontend
+          VITE_API_URL="$API_URL" npm --prefix frontend run build
+          (cd frontend/dist && zip -qr "$GITHUB_WORKSPACE/site.zip" .)
+      - name: Publish to Amplify
+        run: |
+          read -r JOB_ID UPLOAD_URL < <(aws amplify create-deployment --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$AMPLIFY_BRANCH" --query '[jobId, zipUploadUrl]' --output text)
+          curl -sSf -X PUT -H "Content-Type: application/zip" --upload-file site.zip "$UPLOAD_URL"
+          aws amplify start-deployment --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH" --job-id "$JOB_ID" > /dev/null
+          for i in $(seq 1 60); do
+            STATUS=$(aws amplify get-job --app-id "$AMPLIFY_APP_ID" --branch-name "$AMPLIFY_BRANCH" \
+              --job-id "$JOB_ID" --query 'job.summary.status' --output text)
+            echo "Amplify job $JOB_ID: $STATUS"
+            case "$STATUS" in
+              SUCCEED) echo "Live: https://$AMPLIFY_BRANCH.$AMPLIFY_APP_ID.amplifyapp.com"; exit 0 ;;
+              FAILED|CANCELLED) exit 1 ;;
+            esac
+            sleep 5
+          done
+          echo "Timed out waiting for Amplify"; exit 1

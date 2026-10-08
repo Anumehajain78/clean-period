@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Clean Period - one-time setup so GitHub Actions on Anumehajain78/clean-period
+  (branch main) can deploy the backend (SAM) and the frontend (Amplify) without
+  stored AWS keys. Deploy once:
+  aws cloudformation deploy --stack-name clean-period-github
+  --template-file infra/github-deploy.yaml --capabilities CAPABILITY_NAMED_IAM
+
+Parameters:
+  Repo:
+    Type: String
+    Default: Anumehajain78/clean-period
+  Branch:
+    Type: String
+    Default: main
+
+Resources:
+  GitHubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: [sts.amazonaws.com]
+      ThumbprintList:
+        - 6938fd4d98bab03faadb97b34396831e3780aea1
+        - 1c58a3a8518e8759bf075b76b750d4f2df264fcd
+
+  # Named outside the clean-period-* pattern below, so it cannot edit itself.
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: github-deploy-clean-period
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Federated: !Ref GitHubOidc}
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${Repo}:ref:refs/heads/${Branch}
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+      Policies:
+        - PolicyName: manage-clean-period-roles
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:PassRole
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/clean-period-*
+
+  AmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: clean-period
+      Platform: WEB
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      BranchName: !Ref Branch
+      Stage: PRODUCTION
+
+Outputs:
+  DeployRoleArn:
+    Value: !GetAtt DeployRole.Arn
+  AmplifyAppId:
+    Value: !GetAtt AmplifyApp.AppId
+  SiteUrl:
+    Value: !Sub https://${Branch}.${AmplifyApp.DefaultDomain}
