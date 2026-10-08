@@ -142,6 +142,7 @@ def test_check_rejects_missing_reduction_on_reorder_day(f):
 def test_prompt_contains_facts_and_draft(f):
     system, user = notice.prompt(f, notice.template(f))
     assert "only the facts" in system.lower()
+    assert "does not make a polluted day safe" in system
     assert '"en"' in system and '"hi"' in system
     assert json.dumps(f, ensure_ascii=False) in user
     assert notice.template(f)["en"] in user

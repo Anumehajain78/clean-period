@@ -3,7 +3,7 @@
 Body: {"plan": <POST /plan response>, "school_name": "...", "use_ai"?: true}
 
 Returns the parent notice in English and Hindi. Code writes a template from
-the plan's facts. If AI is on, Claude (Amazon Bedrock) rewrites it for tone;
+the plan's facts. If AI is on, Claude Sonnet 4.6 (Amazon Bedrock) rewrites it for tone;
 the AI text is used only if every number in it comes from the facts,
 otherwise the template is returned with the reason.
 """
@@ -13,7 +13,9 @@ import os
 from core import labels, notice
 from functions.common.http import BadRequest, error, json_body, respond
 
-DEFAULT_MODEL = "anthropic.claude-opus-4-8"
+# Newer Claude models are "not available for this account" on our AWS account
+# (checked 2026-10-08); Sonnet 4.6 is the strongest one it can call.
+DEFAULT_MODEL = "global.anthropic.claude-sonnet-4-6"
 
 
 class NoticeAIError(Exception):
@@ -76,10 +78,11 @@ def _client():
     if os.environ.get("NOTICE_USE_AI", "1") != "1":
         return None
     try:
-        from anthropic import AnthropicBedrockMantle
+        from anthropic import AnthropicBedrock
     except ImportError:
         return None
-    return AnthropicBedrockMantle(aws_region=os.environ.get("AWS_REGION"), timeout=20, max_retries=1)
+    # 15 s and no retry: API Gateway gives up at 30 s, and the template covers a failure.
+    return AnthropicBedrock(aws_region=os.environ.get("AWS_REGION"), timeout=15, max_retries=0)
 
 
 _CLIENT = None

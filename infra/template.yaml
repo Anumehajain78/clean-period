@@ -96,12 +96,15 @@ Resources:
       Environment:
         Variables:
           NOTICE_USE_AI: "1"
-          NOTICE_MODEL: anthropic.claude-opus-4-8
+          NOTICE_MODEL: global.anthropic.claude-sonnet-4-6
       Policies:
         - Statement:
             - Effect: Allow
-              Action: bedrock-mantle:CreateInference
-              Resource: "*"
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/global.anthropic.claude-sonnet-4-6
+                - arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-6
+                - arn:aws:bedrock:::foundation-model/anthropic.claude-sonnet-4-6
       Events:
         Post:
           Type: HttpApi

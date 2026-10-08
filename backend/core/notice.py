@@ -167,7 +167,8 @@ def check(notice, f):
 SYSTEM = """You write short notices from a school to parents in India, in English and in Hindi.
 Use only the facts provided. Do not add any number, time, date, health claim or advice that is not in the facts.
 Keep every time in HH:MM form and every percentage exactly as given, with the % sign.
-Say that the numbers are estimates. Keep each language under 120 words, warm and plain.
+Say that the numbers are estimates, and that this reduces exposure but does not make a polluted day safe.
+Keep each language under 120 words, warm and plain.
 Reply with only a JSON object: {"en": "<English notice>", "hi": "<Hindi notice in Devanagari>"}"""
 
 
