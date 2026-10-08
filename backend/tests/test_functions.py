@@ -176,6 +176,8 @@ def test_plan_includes_air_sources_and_labels():
     assert "Open-Meteo" in b["air"]["source"]
     assert any("assumption" in a for a in b["assumptions"])
     assert "estimate" in b["label"].lower()
+    assert len(b["assumptions_hi"]) == len(b["assumptions"])
+    assert "अनुमान" in b["label_hi"]
 
 
 def test_plan_all_indoors_day():
