@@ -164,6 +164,12 @@ Do not build:
 
 ## Working rules for Claude Code
 
+- Works for any school at any location. Nothing school-specific in code:
+  location, slot times, number and length of periods, subjects and teachers all
+  come from input. Tests cover at least two different schools (different
+  cities, slot counts and lengths). Chinmaya Vidyalaya is only the demo and
+  backtest example. The CPCB bands and the Hindi notice make the product
+  India-first. Say that, and don't promise other countries.
 - `backend/core/` has no AWS calls and has unit tests for every function.
 - Write the test first for dose and optimiser logic.
 - Every number shown to a user is labelled as an estimate, with its source.
