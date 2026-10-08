@@ -72,7 +72,9 @@ def main():
             "closures": [{"reason": c["reason"], "source": c["source"]} for c in calendar["closures"]],
         },
         "assumptions": labels.assumptions(config) + [calendar["not_included"]],
+        "assumptions_hi": labels.assumptions_hi(config) + [calendar["not_included_hi"]],
         "label": labels.ESTIMATE_LABEL,
+        "label_hi": labels.ESTIMATE_LABEL_HI,
         **rounded(result),
     }
 

@@ -3,16 +3,33 @@
   "region": "Delhi, India",
   "session": "2025-26",
   "closures": [
-    {"date": "2025-11-05", "reason": "Guru Nanak's Birthday (gazetted holiday)",
-     "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"},
-    {"date": "2025-11-25", "reason": "Guru Tegh Bahadur Martyrdom Day, 350th (public holiday declared by Delhi Government)",
-     "source": "https://www.tribuneindia.com/news/delhi/public-holiday-on-nov-25-to-mark-guru-teg-bahadurs-martyrdom-anniv/amp"},
-    {"date": "2025-12-25", "reason": "Christmas Day (gazetted holiday)",
-     "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"},
-    {"start": "2026-01-01", "end": "2026-01-15", "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)",
-     "source": "https://www.businesstoday.in/education/story/delhi-school-summer-vacations-start-from-may-11-doe-outlines-full-2025-26-academic-calendar-471809-2025-04-12"},
-    {"date": "2026-01-26", "reason": "Republic Day (gazetted holiday)",
-     "source": "https://cleartax.in/s/delhi-government-holiday-list-2026"}
+    {
+      "date": "2025-11-05",
+      "reason": "Guru Nanak's Birthday (gazetted holiday)",
+      "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"
+    },
+    {
+      "date": "2025-11-25",
+      "reason": "Guru Tegh Bahadur Martyrdom Day, 350th (public holiday declared by Delhi Government)",
+      "source": "https://www.tribuneindia.com/news/delhi/public-holiday-on-nov-25-to-mark-guru-teg-bahadurs-martyrdom-anniv/amp"
+    },
+    {
+      "date": "2025-12-25",
+      "reason": "Christmas Day (gazetted holiday)",
+      "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"
+    },
+    {
+      "start": "2026-01-01",
+      "end": "2026-01-15",
+      "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)",
+      "source": "https://www.businesstoday.in/education/story/delhi-school-summer-vacations-start-from-may-11-doe-outlines-full-2025-26-academic-calendar-471809-2025-04-12"
+    },
+    {
+      "date": "2026-01-26",
+      "reason": "Republic Day (gazetted holiday)",
+      "source": "https://cleartax.in/s/delhi-government-holiday-list-2026"
+    }
   ],
-  "not_included": "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar."
+  "not_included": "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar.",
+  "not_included_hi": "जिन दिनों GRAP प्रदूषण आदेशों के कारण कुछ कक्षाएँ हाइब्रिड या ऑनलाइन हुईं, उन्हें हटाया नहीं गया है। निजी स्कूलों का कैलेंडर DoE कैलेंडर से अलग हो सकता है।"
 }

@@ -14,3 +14,20 @@ def assumptions(config):
         "CPCB bands are defined for 24-hour averages.",
         "Doses are estimates.",
     ]
+
+
+ESTIMATE_LABEL_HI = ("PM2.5 पूर्वानुमान और प्रकाशित औसत साँस दर पर आधारित अनुमान। "
+                     "इससे प्रदूषण का असर कम होता है, पर बहुत खराब दिन सुरक्षित नहीं बनता।")
+
+
+def assumptions_hi(config):
+    """Hindi version of `assumptions`, same order."""
+    return [
+        f"कमरे के अंदर PM2.5 को बाहर का {config['exposure_factor']['indoor']} गुना माना गया है (मान्यता)।",
+        "साँस की दर 6 से 11 साल के बच्चों की प्रकाशित औसत दर है "
+        f"({config['inhalation_rate_m3_min']['source']}), हर बच्चे के लिए मापी नहीं गई।",
+        "PM2.5 लगभग 45 km के ग्रिड का मॉडल डेटा है, किसी सड़क का माप नहीं।",
+        f"\"सब अंदर\" नियम घंटे के मानों पर {config['all_indoors_threshold_pm25']} µg/m³ का उपयोग करता है; "
+        "CPCB श्रेणियाँ 24 घंटे के औसत के लिए बनी हैं।",
+        "खुराक के आँकड़े अनुमान हैं।",
+    ]

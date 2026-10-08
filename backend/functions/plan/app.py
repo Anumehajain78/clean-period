@@ -59,7 +59,9 @@ def handle(event, get_forecast, config, now=None):
         **plan,
         "air": air,
         "assumptions": labels.assumptions(config),
+        "assumptions_hi": labels.assumptions_hi(config),
         "label": labels.ESTIMATE_LABEL,
+        "label_hi": labels.ESTIMATE_LABEL_HI,
     })
 
 

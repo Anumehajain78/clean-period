@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-08T12:03:42+00:00",
+ "generated_at": "2026-10-08T12:22:30+00:00",
  "school": {
   "name": "Chinmaya Vidyalaya, Vasant Vihar",
   "address": "Near Priya Cinema, Indian Air Lines & Air India Estate, Vasant Vihar, New Delhi, Delhi 110057",
@@ -56,7 +56,16 @@
   "Doses are estimates.",
   "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar."
  ],
+ "assumptions_hi": [
+  "कमरे के अंदर PM2.5 को बाहर का 0.7 गुना माना गया है (मान्यता)।",
+  "साँस की दर 6 से 11 साल के बच्चों की प्रकाशित औसत दर है (US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2), हर बच्चे के लिए मापी नहीं गई।",
+  "PM2.5 लगभग 45 km के ग्रिड का मॉडल डेटा है, किसी सड़क का माप नहीं।",
+  "\"सब अंदर\" नियम घंटे के मानों पर 120 µg/m³ का उपयोग करता है; CPCB श्रेणियाँ 24 घंटे के औसत के लिए बनी हैं।",
+  "खुराक के आँकड़े अनुमान हैं।",
+  "जिन दिनों GRAP प्रदूषण आदेशों के कारण कुछ कक्षाएँ हाइब्रिड या ऑनलाइन हुईं, उन्हें हटाया नहीं गया है। निजी स्कूलों का कैलेंडर DoE कैलेंडर से अलग हो सकता है।"
+ ],
  "label": "Estimates from a PM2.5 forecast and published average breathing rates. This reduces exposure; it does not make a severe day safe.",
+ "label_hi": "PM2.5 पूर्वानुमान और प्रकाशित औसत साँस दर पर आधारित अनुमान। इससे प्रदूषण का असर कम होता है, पर बहुत खराब दिन सुरक्षित नहीं बनता।",
  "summary": {
   "school_days": 50,
   "all_indoors_days": 1,
