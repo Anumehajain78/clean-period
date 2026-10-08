@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# SAM / AWS
+.aws-sam/
+samconfig.toml.bak
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
