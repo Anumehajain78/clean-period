@@ -20,8 +20,8 @@ export interface Period {
 export interface School {
   name: string
   address?: string
-  latitude: number
-  longitude: number
+  latitude: number | null
+  longitude: number | null
   timezone: string
   ground_capacity: number | null
 }
@@ -82,7 +82,9 @@ export interface PlanResponse {
     category_note: string
   }
   assumptions: string[]
+  assumptions_hi: string[]
   label: string
+  label_hi: string
 }
 
 export interface BacktestResult {
@@ -97,6 +99,7 @@ export interface BacktestResult {
     closures: { reason: string; source: string }[]
   }
   assumptions: string[]
+  assumptions_hi: string[]
   label: string
   summary: {
     school_days: number

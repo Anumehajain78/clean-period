@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import backtestJson from '../../data/backtest_result.json'
 import sampleTimetable from '../../data/sample_timetable.json'
 import { makeNotice, makePlan } from './api'
@@ -7,7 +7,9 @@ import { NoticeCard } from './components/NoticeCard'
 import { PlanResult } from './components/PlanResult'
 import { Sources } from './components/Sources'
 import { TimetableForm } from './components/TimetableForm'
-import { t, type Lang } from './i18n/strings'
+import { t, weekdayNames, type Lang } from './i18n/strings'
+import { loadTimetable, saveTimetable } from './storage'
+import { emptyTimetable, problems, schoolDays, sortedSlots } from './timetable'
 import type { BacktestResult, NoticeResponse, PlanResponse, Timetable } from './types'
 import { tomorrowWeekday } from './ui'
 
@@ -16,12 +18,14 @@ const sample = sampleTimetable as unknown as Timetable
 
 export default function App() {
   const [lang, setLang] = useState<Lang>('en')
-  const [timetable, setTimetable] = useState<Timetable>(() => structuredClone(sample))
+  const [timetable, setTimetable] = useState<Timetable>(() => loadTimetable() ?? structuredClone(sample))
+  const tomorrow = tomorrowWeekday()
   const [weekday, setWeekday] = useState(() => {
-    const days = Object.keys(sample.classes[0].days)
-    const tomorrow = tomorrowWeekday()
+    const days = schoolDays(timetable)
     return days.includes(tomorrow) ? tomorrow : days[0]
   })
+  useEffect(() => saveTimetable(timetable), [timetable])
+  const issues = problems(timetable, weekday)
   const [plan, setPlan] = useState<PlanResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -42,7 +46,7 @@ export default function App() {
     try {
       setPlan(await makePlan({
         school: timetable.school,
-        slots: timetable.slots,
+        slots: sortedSlots(timetable.slots),
         classes: timetable.classes.map((c) => ({ id: c.id, name: c.name, periods: c.days[weekday] ?? [] })),
       }))
     } catch (e) {
@@ -80,9 +84,27 @@ export default function App() {
 
       <TimetableForm lang={lang} timetable={timetable} weekday={weekday}
         onWeekday={(d) => { setWeekday(d); resetPlan() }}
-        onChange={(tt) => { setTimetable(tt); resetPlan() }} />
+        onChange={(tt) => { setTimetable(tt); resetPlan() }}
+        onLoadSample={() => { setTimetable(structuredClone(sample)); resetPlan() }}
+        onStartEmpty={() => { setTimetable(emptyTimetable()); resetPlan() }} />
 
-      <button type="button" onClick={onPlan} disabled={loading}
+      {weekday !== tomorrow && (
+        <p className="rounded-md bg-sky-50 px-3 py-2 text-sm text-sky-900">
+          {t(lang, 'usingDay', {
+            tomorrow: weekdayNames[tomorrow]?.[lang] ?? tomorrow,
+            day: weekdayNames[weekday]?.[lang] ?? weekday,
+          })}
+        </p>
+      )}
+      {issues.length > 0 && (
+        <div role="status" className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="font-medium">{t(lang, 'fixFirst')}</p>
+          <ul className="mt-1 list-disc pl-5">
+            {issues.map((p, i) => <li key={i}>{t(lang, p.key)}{p.detail ? ` (${p.detail})` : ''}</li>)}
+          </ul>
+        </div>
+      )}
+      <button type="button" onClick={onPlan} disabled={loading || issues.length > 0}
         className="w-full rounded-xl bg-emerald-700 px-4 py-3 font-semibold text-white disabled:opacity-60">
         {loading ? t(lang, 'planning') : t(lang, 'makePlan')}
       </button>

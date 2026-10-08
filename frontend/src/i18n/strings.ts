@@ -11,6 +11,54 @@ const strings = {
   langToggle: { en: 'हिंदी', hi: 'English' },
 
   school: { en: 'School', hi: 'स्कूल' },
+  schoolName: { en: 'School name', hi: 'स्कूल का नाम' },
+  searchPlace: { en: 'Town or city', hi: 'शहर या कस्बा' },
+  find: { en: 'Find', hi: 'खोजें' },
+  searching: { en: 'Searching…', hi: 'खोज रहे हैं…' },
+  noPlaces: { en: 'No place found. Try the nearest city.', hi: 'कोई जगह नहीं मिली। पास का शहर लिखें।' },
+  useMyLocation: { en: 'Use my location', hi: 'मेरी लोकेशन लें' },
+  locating: { en: 'Finding you…', hi: 'लोकेशन ले रहे हैं…' },
+  locationError: { en: 'Could not get the location', hi: 'लोकेशन नहीं मिल सकी' },
+  locationNow: { en: 'Location', hi: 'लोकेशन' },
+  noLocation: { en: 'not set', hi: 'तय नहीं' },
+  cityEnough: {
+    en: 'The nearest town or city is enough: the air forecast covers about 45 km.',
+    hi: 'पास का शहर काफ़ी है: हवा का पूर्वानुमान लगभग 45 km के क्षेत्र का होता है।',
+  },
+  placeSource: { en: 'Place search: Open-Meteo Geocoding API (GeoNames).', hi: 'जगह खोज: Open-Meteo Geocoding API (GeoNames)।' },
+  slots: { en: 'Periods of the school day', hi: 'स्कूल के दिन के पीरियड' },
+  slotsHelp: {
+    en: 'Same times for every class. Removing a time removes it from every class.',
+    hi: 'हर कक्षा के लिए एक ही समय। समय हटाने पर वह हर कक्षा से हट जाएगा।',
+  },
+  start: { en: 'Start', hi: 'शुरू' },
+  end: { en: 'End', hi: 'खत्म' },
+  addSlot: { en: '+ Add time', hi: '+ समय जोड़ें' },
+  remove: { en: 'Remove', hi: 'हटाएँ' },
+  classes: { en: 'Classes', hi: 'कक्षाएँ' },
+  className: { en: 'Class name', hi: 'कक्षा का नाम' },
+  addClass: { en: '+ Add class', hi: '+ कक्षा जोड़ें' },
+  removeClass: { en: 'Remove class', hi: 'कक्षा हटाएँ' },
+  addPeriod: { en: '+ Add period', hi: '+ पीरियड जोड़ें' },
+  emptySlot: { en: 'No period', hi: 'कोई पीरियड नहीं' },
+  resetSample: { en: 'Load sample timetable', hi: 'नमूना समय-सारणी लें' },
+  startEmpty: { en: 'Start empty', hi: 'खाली से शुरू करें' },
+  confirmReplace: {
+    en: 'This replaces the timetable on this device. Continue?',
+    hi: 'इससे इस डिवाइस पर सहेजी समय-सारणी बदल जाएगी। जारी रखें?',
+  },
+  savedLocally: { en: 'Saved on this device only.', hi: 'केवल इसी डिवाइस पर सहेजा गया।' },
+  usingDay: {
+    en: 'Tomorrow is {tomorrow}. Planning with the {day} timetable.',
+    hi: 'कल {tomorrow} है। {day} की समय-सारणी से योजना बन रही है।',
+  },
+  fixFirst: { en: 'Fix these first:', hi: 'पहले इन्हें ठीक करें:' },
+  needLocation: { en: 'Set the school location', hi: 'स्कूल की लोकेशन तय करें' },
+  needClass: { en: 'Add at least one class', hi: 'कम से कम एक कक्षा जोड़ें' },
+  needClassName: { en: 'Every class needs a name', hi: 'हर कक्षा का नाम चाहिए' },
+  needSubject: { en: 'Period without a subject', hi: 'बिना विषय का पीरियड' },
+  slotEndsBeforeStart: { en: 'A period ends before it starts', hi: 'एक पीरियड शुरू होने से पहले खत्म होता है' },
+  slotsOverlap: { en: 'Two period times overlap', hi: 'दो पीरियड के समय टकराते हैं' },
   latitude: { en: 'Latitude', hi: 'अक्षांश' },
   longitude: { en: 'Longitude', hi: 'देशांतर' },
   timetable: { en: 'Timetable', hi: 'समय-सारणी' },
@@ -82,8 +130,8 @@ const strings = {
 
 export type StringKey = keyof typeof strings
 
-export function t(lang: Lang, key: StringKey): string {
-  return strings[key][lang]
+export function t(lang: Lang, key: StringKey, vars: Record<string, string> = {}): string {
+  return strings[key][lang].replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? `{${k}}`)
 }
 
 export const activityNames: Record<string, Record<Lang, string>> = {

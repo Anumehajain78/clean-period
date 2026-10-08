@@ -21,3 +21,5 @@ export function tomorrowWeekday(now = new Date()): string {
   d.setDate(d.getDate() + 1)
   return d.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
 }
+
+export const input = 'w-full rounded-md border border-stone-300 bg-white px-2 py-1.5 text-sm'

@@ -2,7 +2,9 @@ import { t, type Lang } from '../i18n/strings'
 import type { BacktestResult, PlanResponse } from '../types'
 
 export function Sources({ lang, plan, backtest }: { lang: Lang; plan: PlanResponse | null; backtest: BacktestResult }) {
-  const assumptions = plan?.assumptions ?? backtest.assumptions
+  const assumptions = lang === 'hi'
+    ? plan?.assumptions_hi ?? backtest.assumptions_hi
+    : plan?.assumptions ?? backtest.assumptions
   return (
     <footer className="rounded-xl bg-stone-100 p-4 text-xs text-stone-700">
       <h2 className="mb-2 text-sm font-semibold">* {t(lang, 'sources')}</h2>

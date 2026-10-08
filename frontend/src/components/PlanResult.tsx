@@ -49,7 +49,9 @@ export function PlanResult({ plan, lang }: { plan: PlanResponse; lang: Lang }) {
           <div key={c.id} className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-stone-200">
             <div className="flex items-baseline justify-between">
               <h3 className="font-semibold">{c.name}</h3>
-              <span className="text-sm font-semibold text-emerald-700">−{pct(c.reduction_pct)}</span>
+              <span className="text-sm font-semibold text-emerald-700">
+                {c.reduction_pct >= 0.05 ? `−${pct(c.reduction_pct)}` : pct(0)}
+              </span>
             </div>
             <p className="text-xs text-stone-500">
               {t(lang, 'dose')}: {ug(c.before_ug)} → {ug(c.after_ug)}*
