@@ -66,8 +66,11 @@ Constraints:
 
 Objective: minimise total dose across all classes.
 
-Version 1: search swaps of outdoor periods with other movable periods, reject
-swaps that break a constraint. Version 2, only if version 1 is done and tested:
+Version 1 (done, `core/optimiser.py`): greedy search over swaps of any two
+movable periods with different activities, in slots of the same length. It
+rejects swaps that break a constraint. For one class without clashes this
+reaches the best order (a test checks this against brute force). The ground
+limit counts only movable ground periods, not whole-school assembly or recess. Version 2, only if version 1 is done and tested:
 OR-Tools CP-SAT.
 
 ## Backtest (this is our proof)
