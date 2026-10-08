@@ -17,7 +17,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "backend"))
 
-from core import backtest, dose  # noqa: E402
+from core import backtest, dose, labels  # noqa: E402
 
 
 def rounded(obj, places=2):
@@ -71,15 +71,8 @@ def main():
             "pm25_categories": config["pm25_categories"]["source"],
             "closures": [{"reason": c["reason"], "source": c["source"]} for c in calendar["closures"]],
         },
-        "assumptions": [
-            f"Indoor PM2.5 is {config['exposure_factor']['indoor']} x outdoor (assumption).",
-            "Breathing rates are published averages for ages 6 to <11, not measured per child.",
-            "PM2.5 is model data on a ~45 km grid, not a street-level measurement.",
-            f"All-indoors rule uses {config['all_indoors_threshold_pm25']} ug/m3 on hourly values; "
-            "CPCB bands are defined for 24-hour averages.",
-            calendar["not_included"],
-            "Doses are estimates.",
-        ],
+        "assumptions": labels.assumptions(config) + [calendar["not_included"]],
+        "label": labels.ESTIMATE_LABEL,
         **rounded(result),
     }
 

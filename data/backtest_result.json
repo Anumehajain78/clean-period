@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-08T11:59:32+00:00",
+ "generated_at": "2026-10-08T12:03:42+00:00",
  "school": {
   "name": "Chinmaya Vidyalaya, Vasant Vihar",
   "address": "Near Priya Cinema, Indian Air Lines & Air India Estate, Vasant Vihar, New Delhi, Delhi 110057",
@@ -49,13 +49,14 @@
   ]
  },
  "assumptions": [
-  "Indoor PM2.5 is 0.7 x outdoor (assumption).",
-  "Breathing rates are published averages for ages 6 to <11, not measured per child.",
+  "Indoor PM2.5 is taken as 0.7 x outdoor (assumption).",
+  "Breathing rates are published averages for ages 6 to <11 (US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2), not measured per child.",
   "PM2.5 is model data on a ~45 km grid, not a street-level measurement.",
-  "All-indoors rule uses 120 ug/m3 on hourly values; CPCB bands are defined for 24-hour averages.",
-  "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar.",
-  "Doses are estimates."
+  "The all-indoors rule uses 120 ug/m3 on hourly values; CPCB bands are defined for 24-hour averages.",
+  "Doses are estimates.",
+  "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar."
  ],
+ "label": "Estimates from a PM2.5 forecast and published average breathing rates. This reduces exposure; it does not make a severe day safe.",
  "summary": {
   "school_days": 50,
   "all_indoors_days": 1,
