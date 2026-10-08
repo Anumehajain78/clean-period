@@ -25,8 +25,8 @@ Resources:
     Properties:
       CorsConfiguration:
         AllowOrigins: [!Ref AllowedOrigin]
-        AllowMethods: [GET, POST, OPTIONS]
-        AllowHeaders: [content-type]
+        AllowMethods: [GET, POST, PUT, OPTIONS]
+        AllowHeaders: [content-type, x-edit-key]
 
   # Single table: School, Timetable, Plan, ForecastCache. Keys pk/sk.
   # Items with expires_at (epoch seconds) are removed by DynamoDB TTL.
@@ -37,9 +37,18 @@ Resources:
       AttributeDefinitions:
         - {AttributeName: pk, AttributeType: S}
         - {AttributeName: sk, AttributeType: S}
+        - {AttributeName: gsi1pk, AttributeType: S}
+        - {AttributeName: gsi1sk, AttributeType: S}
       KeySchema:
         - {AttributeName: pk, KeyType: HASH}
         - {AttributeName: sk, KeyType: RANGE}
+      # Lists saved schools for the nightly run (gsi1pk=SCHOOL).
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - {AttributeName: gsi1pk, KeyType: HASH}
+            - {AttributeName: gsi1sk, KeyType: RANGE}
+          Projection: {ProjectionType: KEYS_ONLY}
       TimeToLiveSpecification:
         AttributeName: expires_at
         Enabled: true
@@ -97,6 +106,42 @@ Resources:
         Post:
           Type: HttpApi
           Properties: {ApiId: !Ref Api, Path: /notice, Method: POST}
+
+  SchoolsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.schools.app.handler
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref Table}
+      Events:
+        Create:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /schools, Method: POST}
+        Get:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: "/schools/{id}", Method: GET}
+        Update:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: "/schools/{id}", Method: PUT}
+        LatestPlan:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: "/schools/{id}/plans/latest", Method: GET}
+
+  # Every evening at 19:00 IST: plan tomorrow for every saved school.
+  NightlyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.nightly.app.handler
+      Timeout: 300
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref Table}
+      Events:
+        Evening:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(0 19 * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+            RetryPolicy: {MaximumRetryAttempts: 0}
 
 Outputs:
   ApiUrl:
