@@ -1,0 +1,47 @@
+{
+  "dose_formula": "dose_ug = pm25_ug_m3 * exposure_factor * inhalation_rate_m3_min * minutes",
+
+  "exposure_factor": {
+    "outdoor": 1.0,
+    "indoor": 0.7,
+    "note": "Indoor factor is an ASSUMPTION (indoor PM2.5 as a share of outdoor). Configurable. Label it in the UI."
+  },
+
+  "inhalation_rate_m3_min": {
+    "sedentary": 0.0048,
+    "light": 0.011,
+    "moderate": 0.022,
+    "high": 0.042,
+    "age_group": "6 to <11 years, mean, males and females combined",
+    "source": "US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2",
+    "source_url": "https://www.epa.gov/sites/production/files/2015-09/documents/efh-chapter06.pdf"
+  },
+
+  "activities": {
+    "classroom":       {"intensity": "sedentary", "indoors": true},
+    "assembly":        {"intensity": "light",     "indoors": false},
+    "recess":          {"intensity": "moderate",  "indoors": false},
+    "pe":              {"intensity": "high",      "indoors": false},
+    "indoor_activity": {"intensity": "light",     "indoors": true}
+  },
+
+  "pm25_categories": {
+    "unit": "ug/m3, 24-hour average",
+    "bands": [
+      {"name": "Good",         "max": 30},
+      {"name": "Satisfactory", "max": 60},
+      {"name": "Moderate",     "max": 90},
+      {"name": "Poor",         "max": 120},
+      {"name": "Very Poor",    "max": 250},
+      {"name": "Severe",       "max": null}
+    ],
+    "source": "CPCB National AQI (2014), as tabled in IMD AQI SOP Table 3.1",
+    "source_url": "https://mausam.imd.gov.in/imd_latest/contents/pdf/emrc_sop.pdf",
+    "note": "Bands are defined for 24-hour averages. Applying them to hourly forecast values is an approximation."
+  },
+
+  "all_indoors_threshold_pm25": 120,
+  "all_indoors_rule": "If no school hour has PM2.5 at or below this value (i.e. every hour is Very Poor or worse), all outdoor periods become indoor activity.",
+
+  "ground_capacity_default": 1
+}
