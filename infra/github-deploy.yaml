@@ -5,11 +5,15 @@ Description: >-
   stored AWS keys. Deploy once:
   aws cloudformation deploy --stack-name clean-period-github
   --template-file infra/github-deploy.yaml --capabilities CAPABILITY_NAMED_IAM
+  --parameter-overrides Repo=<owner@ownerId/repo@repoId> Branch=main
+  (an update keeps old parameter values unless they are passed again)
 
 Parameters:
+  # GitHub's OIDC subject uses owner and repo IDs: owner@ownerId/repo@repoId.
+  # IDs survive renames and stop a re-created repo with the same name from deploying.
   Repo:
     Type: String
-    Default: Anumehajain78/clean-period
+    Default: Anumehajain78@220583830/clean-period@1410176403
   Branch:
     Type: String
     Default: main
