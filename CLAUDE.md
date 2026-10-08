@@ -133,6 +133,11 @@ mostly follows the daily cycle (morning and evening peaks), not exact hours.
   and keeps the AI text only if every number in it is in the facts. The SDK is
   a Lambda layer on that function only; all Lambdas are x86_64 so the layer
   builds without Docker.
+- Nightly: `schools` Lambda saves timetables (no accounts: a secret edit key,
+  stored hashed). `nightly` Lambda runs at 19:00 Asia/Kolkata via a SAM
+  `ScheduleV2` event, plans tomorrow for every saved school with
+  `core/nightly.py` and stores the result (plan + template notice, 30-day TTL).
+  The AI notice is not used at night, to keep Bedrock calls on demand only.
 
 Design rule: AI reads and writes text. Code decides the plan. The plan never
 depends on a model's opinion.

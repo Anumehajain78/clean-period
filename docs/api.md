@@ -89,6 +89,38 @@ Amazon Bedrock rewrites it for tone; the AI text is used only if every number
 and time in it appears in `facts`, otherwise the template comes back with
 `fallback_reason`. The UI shows which one it is.
 
+## Saved schools and the nightly plan
+
+No accounts. Saving a school returns a secret `edit_key` once; only its hash is
+stored. The frontend keeps the id and key in the browser.
+
+| Method and path | Body / header | Response |
+|---|---|---|
+| `POST /schools` | `{"timetable": <same shape as data/sample_timetable.json>}` | `201 {"id", "edit_key"}`, or `400 {"error", "problems": [...]}` |
+| `GET /schools/{id}` | | `{"id", "timetable"}` |
+| `PUT /schools/{id}` | header `x-edit-key`, `{"timetable": ...}` | `200`, `403` wrong key, `404` unknown |
+| `GET /schools/{id}/plans/latest` | | newest nightly result, `404` if none yet |
+
+Nightly result:
+
+```json
+{
+  "date": "2026-10-09",
+  "status": "planned | no_school | error",
+  "reason": "only for no_school and error",
+  "plan": "<same shape as the POST /plan response>",
+  "notice": {"en": "...", "hi": "...", "source": "template"},
+  "created_at": 1791460000
+}
+```
+
+The `nightly` Lambda runs every evening at 19:00 Asia/Kolkata (EventBridge
+Scheduler). For each saved school it fetches the forecast, plans tomorrow's
+weekday, writes the template notice and stores the result for 30 days. A
+school with no lessons tomorrow gets `no_school`; a failure for one school is
+stored as `error` and the run continues. Locally, `POST /_nightly` on
+`scripts/local_api.py` runs it now (saved schools are in memory there).
+
 ## Backtest data
 
 `data/backtest_result.json` (from `scripts/backtest.py`), static, for the

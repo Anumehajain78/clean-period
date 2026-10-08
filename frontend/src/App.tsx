@@ -3,6 +3,7 @@ import backtestJson from '../../data/backtest_result.json'
 import sampleTimetable from '../../data/sample_timetable.json'
 import { makeNotice, makePlan } from './api'
 import { Backtest } from './components/Backtest'
+import { NightlyCard } from './components/NightlyCard'
 import { NoticeCard } from './components/NoticeCard'
 import { PlanResult } from './components/PlanResult'
 import { Sources } from './components/Sources'
@@ -127,6 +128,7 @@ export default function App() {
         </p>
       )}
       {notice && <NoticeCard notice={notice} lang={lang} />}
+      <NightlyCard lang={lang} timetable={timetable} canSave={issues.length === 0} />
       <Backtest data={backtest} lang={lang} />
       <Sources lang={lang} plan={plan} backtest={backtest} />
     </div>

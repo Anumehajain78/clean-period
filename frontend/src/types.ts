@@ -119,3 +119,17 @@ export interface NoticeResponse {
   fallback_reason?: string
   label: string
 }
+
+export interface SavedSchool {
+  id: string
+  edit_key: string
+}
+
+export interface NightlyResult {
+  date: string
+  status: 'planned' | 'no_school' | 'error'
+  reason?: string
+  plan?: PlanResponse
+  notice?: { en: string; hi: string; source: 'template' | 'ai' }
+  created_at: number
+}

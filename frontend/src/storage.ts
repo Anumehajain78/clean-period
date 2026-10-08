@@ -1,5 +1,5 @@
 // Keeps the teacher's timetable in this browser only. Storage can be missing or blocked.
-import type { Timetable } from './types'
+import type { SavedSchool, Timetable } from './types'
 
 const KEY = 'clean-period:timetable:v1'
 
@@ -20,5 +20,25 @@ export function saveTimetable(tt: Timetable) {
     localStorage.setItem(KEY, JSON.stringify(tt))
   } catch {
     // ignore: the app works without saving
+  }
+}
+
+const SAVED_KEY = 'clean-period:saved-school:v1'
+
+export function loadSaved(): SavedSchool | null {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVED_KEY) ?? 'null')
+    return s && typeof s.id === 'string' && typeof s.edit_key === 'string' ? s : null
+  } catch {
+    return null
+  }
+}
+
+export function storeSaved(saved: SavedSchool | null) {
+  try {
+    if (saved) localStorage.setItem(SAVED_KEY, JSON.stringify(saved))
+    else localStorage.removeItem(SAVED_KEY)
+  } catch {
+    // ignore
   }
 }

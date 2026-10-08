@@ -111,6 +111,32 @@ const strings = {
   english: { en: 'English', hi: 'अंग्रेज़ी' },
   hindi: { en: 'Hindi', hi: 'हिंदी' },
 
+  nightlyTitle: { en: 'Nightly plan', hi: 'हर शाम की योजना' },
+  nightlyHelp: {
+    en: "Save this school and Clean Period plans the next day every evening at 19:00 IST, with the parent notice ready.",
+    hi: 'स्कूल सहेजें, फिर हर शाम 19:00 बजे (IST) अगले दिन की योजना और अभिभावक सूचना अपने आप तैयार होगी।',
+  },
+  saveSchool: { en: 'Save school for nightly plans', hi: 'हर शाम की योजना के लिए स्कूल सहेजें' },
+  saving: { en: 'Saving…', hi: 'सहेज रहे हैं…' },
+  savedAs: { en: 'Saved. School ID', hi: 'सहेजा गया। स्कूल ID' },
+  keyWarning: {
+    en: 'The edit key is kept only in this browser. Without it the saved timetable cannot be changed.',
+    hi: 'बदलाव की कुंजी केवल इसी ब्राउज़र में है। इसके बिना सहेजी गई समय-सारणी बदली नहीं जा सकती।',
+  },
+  updateSaved: { en: 'Update saved timetable', hi: 'सहेजी समय-सारणी अपडेट करें' },
+  updated: { en: 'Saved timetable updated.', hi: 'सहेजी समय-सारणी अपडेट हो गई।' },
+  showNightly: { en: 'Show latest nightly plan', hi: 'पिछली शाम की योजना दिखाएँ' },
+  loadingNightly: { en: 'Loading…', hi: 'लोड हो रहा है…' },
+  nightlyMadeAt: { en: 'Made at', hi: 'बनी' },
+  nightlyNoSchool: { en: 'No school that day', hi: 'उस दिन स्कूल नहीं' },
+  nightlyFailed: { en: 'The nightly plan failed', hi: 'शाम की योजना नहीं बन सकी' },
+  saveError: { en: 'Could not save', hi: 'सहेजा नहीं जा सका' },
+  loadError: { en: 'Could not load the nightly plan', hi: 'शाम की योजना लोड नहीं हो सकी' },
+  nightlyNone: {
+    en: 'No nightly plan yet. Plans are made every evening at 19:00 IST.',
+    hi: 'अभी कोई योजना नहीं बनी। योजना हर शाम 19:00 बजे (IST) बनती है।',
+  },
+
   backtestTitle: { en: 'Last winter, replayed', hi: 'पिछली सर्दी, दोबारा जाँची' },
   backtestSub: { en: 'Sample timetable, real air data', hi: 'नमूना समय-सारणी, असली हवा का डेटा' },
   seasonCut: { en: 'season dose cut', hi: 'पूरे मौसम में खुराक में कमी' },
