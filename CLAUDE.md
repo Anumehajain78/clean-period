@@ -87,6 +87,13 @@ any school. Location: Chinmaya Vidyalaya, Vasant Vihar, New Delhi (28.5629,
 77.1678). The UI, README and demo must say "sample timetable, real air data".
 Swap in a real timetable if we get one.
 
+School days skip weekends and the closures in
+`data/school_calendar_delhi_2025-26.json` (DoE winter vacation 1-15 Jan 2026
+and gazetted or declared holidays, each with a source). Days when GRAP orders
+moved classes online are not removed; say so. The result is in
+`data/backtest_result.json`. It reports two figures: the season dose cut
+(total dose before vs after, the headline) and the mean of the daily cuts.
+
 ## Data source
 
 Open-Meteo Air Quality API, hourly `pm2_5`, timezone Asia/Kolkata.
