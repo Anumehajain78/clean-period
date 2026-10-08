@@ -9,6 +9,7 @@ otherwise the template is returned with the reason.
 """
 
 import os
+import time
 
 from core import labels, notice
 from functions.common.http import BadRequest, error, json_body, respond
@@ -65,12 +66,14 @@ def handle(event, client, model):
     draft = notice.template(f)
     out = {**draft, "source": "template", "facts": f, "label": labels.ESTIMATE_LABEL}
     if body.get("use_ai", True) and client is not None:
+        started = time.monotonic()
         try:
             out.update(ai_notice(f, draft, client, model), source="ai", model=model)
         except _ai_errors() as e:
             reason = str(e) or type(e).__name__
             print(f"notice: AI text not used: {reason}")
             out["fallback_reason"] = reason
+        print(f"notice: model call took {time.monotonic() - started:.1f}s")
     return respond(200, out)
 
 
@@ -91,5 +94,7 @@ _CLIENT = None
 def handler(event, context):
     global _CLIENT
     if _CLIENT is None:
+        started = time.monotonic()
         _CLIENT = _client()
+        print(f"notice: client ready in {time.monotonic() - started:.1f}s")
     return handle(event, _CLIENT, os.environ.get("NOTICE_MODEL", DEFAULT_MODEL))

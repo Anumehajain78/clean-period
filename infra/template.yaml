@@ -92,6 +92,7 @@ Resources:
     Properties:
       Handler: functions.notice.app.handler
       Timeout: 28           # HTTP API integrations time out at 30 s
+      MemorySize: 1024      # more CPU for the Anthropic SDK
       Layers: [!Ref AnthropicLayer]
       Environment:
         Variables:
