@@ -1,0 +1,1328 @@
+{
+ "generated_at": "2026-10-08T12:22:30+00:00",
+ "school": {
+  "name": "Chinmaya Vidyalaya, Vasant Vihar",
+  "address": "Near Priya Cinema, Indian Air Lines & Air India Estate, Vasant Vihar, New Delhi, Delhi 110057",
+  "latitude": 28.5629,
+  "longitude": 77.1678,
+  "location_source": "OpenStreetMap Nominatim, centroid of Vasant Vihar 110057",
+  "timezone": "Asia/Kolkata",
+  "ground_capacity": null
+ },
+ "period": {
+  "start": "2025-11-01",
+  "end": "2026-01-31"
+ },
+ "inputs": {
+  "timetable": "data/sample_timetable.json",
+  "timetable_note": "SAMPLE timetable for testing, not a real school's timetable. Transcribed from data/class6_timetable.png. Teacher codes as printed there.",
+  "history": "data/history/pm25_28.5629_77.1678_2025-11-01_2026-01-31.json",
+  "calendar": "data/school_calendar_delhi_2025-26.json",
+  "config": "backend/config/dose_config.json"
+ },
+ "sources": {
+  "air_quality": "Open-Meteo Air Quality API (CC BY 4.0), CAMS Global data from Copernicus",
+  "air_quality_note": "Area-level model data (CAMS Global, ~45 km grid), not a street-level measurement.",
+  "inhalation_rates": "US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2",
+  "pm25_categories": "CPCB National AQI (2014), as tabled in IMD AQI SOP Table 3.1",
+  "closures": [
+   {
+    "reason": "Guru Nanak's Birthday (gazetted holiday)",
+    "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"
+   },
+   {
+    "reason": "Guru Tegh Bahadur Martyrdom Day, 350th (public holiday declared by Delhi Government)",
+    "source": "https://www.tribuneindia.com/news/delhi/public-holiday-on-nov-25-to-mark-guru-teg-bahadurs-martyrdom-anniv/amp"
+   },
+   {
+    "reason": "Christmas Day (gazetted holiday)",
+    "source": "https://www.greythr.com/wiki/acts/st-delhi/holidays/2025/"
+   },
+   {
+    "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)",
+    "source": "https://www.businesstoday.in/education/story/delhi-school-summer-vacations-start-from-may-11-doe-outlines-full-2025-26-academic-calendar-471809-2025-04-12"
+   },
+   {
+    "reason": "Republic Day (gazetted holiday)",
+    "source": "https://cleartax.in/s/delhi-government-holiday-list-2026"
+   }
+  ]
+ },
+ "assumptions": [
+  "Indoor PM2.5 is taken as 0.7 x outdoor (assumption).",
+  "Breathing rates are published averages for ages 6 to <11 (US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2), not measured per child.",
+  "PM2.5 is model data on a ~45 km grid, not a street-level measurement.",
+  "The all-indoors rule uses 120 ug/m3 on hourly values; CPCB bands are defined for 24-hour averages.",
+  "Doses are estimates.",
+  "Days when GRAP pollution orders moved some classes to hybrid or online mode are not removed. Private schools may also differ from the DoE calendar."
+ ],
+ "assumptions_hi": [
+  "कमरे के अंदर PM2.5 को बाहर का 0.7 गुना माना गया है (मान्यता)।",
+  "साँस की दर 6 से 11 साल के बच्चों की प्रकाशित औसत दर है (US EPA Exposure Factors Handbook (2011), Chapter 6, Table 6-2), हर बच्चे के लिए मापी नहीं गई।",
+  "PM2.5 लगभग 45 km के ग्रिड का मॉडल डेटा है, किसी सड़क का माप नहीं।",
+  "\"सब अंदर\" नियम घंटे के मानों पर 120 µg/m³ का उपयोग करता है; CPCB श्रेणियाँ 24 घंटे के औसत के लिए बनी हैं।",
+  "खुराक के आँकड़े अनुमान हैं।",
+  "जिन दिनों GRAP प्रदूषण आदेशों के कारण कुछ कक्षाएँ हाइब्रिड या ऑनलाइन हुईं, उन्हें हटाया नहीं गया है। निजी स्कूलों का कैलेंडर DoE कैलेंडर से अलग हो सकता है।"
+ ],
+ "label": "Estimates from a PM2.5 forecast and published average breathing rates. This reduces exposure; it does not make a severe day safe.",
+ "label_hi": "PM2.5 पूर्वानुमान और प्रकाशित औसत साँस दर पर आधारित अनुमान। इससे प्रदूषण का असर कम होता है, पर बहुत खराब दिन सुरक्षित नहीं बनता।",
+ "summary": {
+  "school_days": 50,
+  "all_indoors_days": 1,
+  "total_before_ug": 16125.86,
+  "total_after_ug": 12553.83,
+  "season_reduction_pct": 22.15,
+  "mean_daily_reduction_pct": 16.77,
+  "by_weekday": {
+   "monday": {
+    "days": 10,
+    "mean_reduction_pct": 30.51
+   },
+   "tuesday": {
+    "days": 10,
+    "mean_reduction_pct": 1.81
+   },
+   "wednesday": {
+    "days": 10,
+    "mean_reduction_pct": 22.84
+   },
+   "thursday": {
+    "days": 9,
+    "mean_reduction_pct": 0.0
+   },
+   "friday": {
+    "days": 11,
+    "mean_reduction_pct": 26.08
+   }
+  }
+ },
+ "days": [
+  {
+   "date": "2025-11-03",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 262.11,
+   "after_ug": 216.36,
+   "reduction_pct": 17.45,
+   "school_hours_pm25_mean": 72.13,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-04",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 120.61,
+   "after_ug": 118.03,
+   "reduction_pct": 2.14,
+   "school_hours_pm25_mean": 63.69,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-06",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 103.98,
+   "after_ug": 103.98,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 61.3,
+   "moves": []
+  },
+  {
+   "date": "2025-11-07",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 208.71,
+   "after_ug": 173.0,
+   "reduction_pct": 17.11,
+   "school_hours_pm25_mean": 58.31,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-10",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 304.01,
+   "after_ug": 225.34,
+   "reduction_pct": 25.88,
+   "school_hours_pm25_mean": 79.91,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-11",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 177.95,
+   "after_ug": 176.25,
+   "reduction_pct": 0.96,
+   "school_hours_pm25_mean": 93.11,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-12",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 380.11,
+   "after_ug": 299.04,
+   "reduction_pct": 21.33,
+   "school_hours_pm25_mean": 105.67,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-13",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 221.01,
+   "after_ug": 221.01,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 124.6,
+   "moves": []
+  },
+  {
+   "date": "2025-11-14",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 334.5,
+   "after_ug": 234.27,
+   "reduction_pct": 29.96,
+   "school_hours_pm25_mean": 88.06,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-17",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 296.37,
+   "after_ug": 223.42,
+   "reduction_pct": 24.61,
+   "school_hours_pm25_mean": 79.73,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-18",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 256.03,
+   "after_ug": 252.73,
+   "reduction_pct": 1.29,
+   "school_hours_pm25_mean": 134.41,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-19",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 516.91,
+   "after_ug": 353.23,
+   "reduction_pct": 31.66,
+   "school_hours_pm25_mean": 134.79,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-20",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 259.84,
+   "after_ug": 259.84,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 147.31,
+   "moves": []
+  },
+  {
+   "date": "2025-11-21",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 432.16,
+   "after_ug": 327.91,
+   "reduction_pct": 24.12,
+   "school_hours_pm25_mean": 118.14,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-24",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 593.54,
+   "after_ug": 365.25,
+   "reduction_pct": 38.46,
+   "school_hours_pm25_mean": 144.66,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-26",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 374.5,
+   "after_ug": 276.98,
+   "reduction_pct": 26.04,
+   "school_hours_pm25_mean": 100.76,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-11-27",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 188.78,
+   "after_ug": 188.78,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 108.53,
+   "moves": []
+  },
+  {
+   "date": "2025-11-28",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 374.44,
+   "after_ug": 260.07,
+   "reduction_pct": 30.55,
+   "school_hours_pm25_mean": 98.16,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-01",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 414.36,
+   "after_ug": 256.55,
+   "reduction_pct": 38.08,
+   "school_hours_pm25_mean": 101.0,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-02",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 201.29,
+   "after_ug": 197.82,
+   "reduction_pct": 1.72,
+   "school_hours_pm25_mean": 104.66,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-03",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 344.74,
+   "after_ug": 283.31,
+   "reduction_pct": 17.82,
+   "school_hours_pm25_mean": 96.79,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-04",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 178.59,
+   "after_ug": 178.59,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 99.49,
+   "moves": []
+  },
+  {
+   "date": "2025-12-05",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 380.07,
+   "after_ug": 260.67,
+   "reduction_pct": 31.41,
+   "school_hours_pm25_mean": 98.69,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-08",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 244.08,
+   "after_ug": 211.78,
+   "reduction_pct": 13.23,
+   "school_hours_pm25_mean": 70.24,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-09",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 118.33,
+   "after_ug": 115.09,
+   "reduction_pct": 2.74,
+   "school_hours_pm25_mean": 59.94,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-10",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 210.21,
+   "after_ug": 174.58,
+   "reduction_pct": 16.95,
+   "school_hours_pm25_mean": 59.07,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-11",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 172.42,
+   "after_ug": 172.42,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 96.0,
+   "moves": []
+  },
+  {
+   "date": "2025-12-12",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 434.05,
+   "after_ug": 312.02,
+   "reduction_pct": 28.11,
+   "school_hours_pm25_mean": 114.76,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-15",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 672.42,
+   "after_ug": 434.56,
+   "reduction_pct": 35.37,
+   "school_hours_pm25_mean": 170.34,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-16",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 178.45,
+   "after_ug": 176.51,
+   "reduction_pct": 1.09,
+   "school_hours_pm25_mean": 92.56,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-17",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 340.2,
+   "after_ug": 289.11,
+   "reduction_pct": 15.02,
+   "school_hours_pm25_mean": 97.11,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-18",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 230.69,
+   "after_ug": 230.69,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 129.86,
+   "moves": []
+  },
+  {
+   "date": "2025-12-19",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 384.83,
+   "after_ug": 288.77,
+   "reduction_pct": 24.96,
+   "school_hours_pm25_mean": 104.44,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-22",
+   "weekday": "monday",
+   "verdict": "all_indoors",
+   "before_ug": 743.58,
+   "after_ug": 325.65,
+   "reduction_pct": 56.21,
+   "school_hours_pm25_mean": 203.16,
+   "moves": []
+  },
+  {
+   "date": "2025-12-23",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 281.39,
+   "after_ug": 276.58,
+   "reduction_pct": 1.71,
+   "school_hours_pm25_mean": 146.97,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-24",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 169.78,
+   "after_ug": 119.01,
+   "reduction_pct": 29.91,
+   "school_hours_pm25_mean": 45.41,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-26",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 394.67,
+   "after_ug": 262.22,
+   "reduction_pct": 33.56,
+   "school_hours_pm25_mean": 101.36,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-29",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 590.72,
+   "after_ug": 437.86,
+   "reduction_pct": 25.88,
+   "school_hours_pm25_mean": 161.96,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-30",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 296.41,
+   "after_ug": 288.32,
+   "reduction_pct": 2.73,
+   "school_hours_pm25_mean": 152.19,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2025-12-31",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 573.62,
+   "after_ug": 395.88,
+   "reduction_pct": 30.99,
+   "school_hours_pm25_mean": 152.76,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-16",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 465.65,
+   "after_ug": 345.48,
+   "reduction_pct": 25.81,
+   "school_hours_pm25_mean": 127.0,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-19",
+   "weekday": "monday",
+   "verdict": "reorder",
+   "before_ug": 614.71,
+   "after_ug": 431.1,
+   "reduction_pct": 29.87,
+   "school_hours_pm25_mean": 160.81,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p1",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Art",
+     "from_slot": "p8",
+     "to_slot": "p1"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-20",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 334.02,
+   "after_ug": 323.67,
+   "reduction_pct": 3.1,
+   "school_hours_pm25_mean": 169.44,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-21",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 415.13,
+   "after_ug": 290.32,
+   "reduction_pct": 30.06,
+   "school_hours_pm25_mean": 110.39,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-22",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 225.95,
+   "after_ug": 225.95,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 127.53,
+   "moves": []
+  },
+  {
+   "date": "2026-01-23",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 277.21,
+   "after_ug": 242.66,
+   "reduction_pct": 12.46,
+   "school_hours_pm25_mean": 79.81,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-27",
+   "weekday": "tuesday",
+   "verdict": "reorder",
+   "before_ug": 195.07,
+   "after_ug": 193.93,
+   "reduction_pct": 0.59,
+   "school_hours_pm25_mean": 101.79,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Yoga",
+     "from_slot": "p5",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Library",
+     "from_slot": "p8",
+     "to_slot": "p5"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-28",
+   "weekday": "wednesday",
+   "verdict": "reorder",
+   "before_ug": 175.25,
+   "after_ug": 160.1,
+   "reduction_pct": 8.64,
+   "school_hours_pm25_mean": 52.94,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "PE",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Social Science",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  },
+  {
+   "date": "2026-01-29",
+   "weekday": "thursday",
+   "verdict": "reorder",
+   "before_ug": 166.55,
+   "after_ug": 166.55,
+   "reduction_pct": 0.0,
+   "school_hours_pm25_mean": 92.96,
+   "moves": []
+  },
+  {
+   "date": "2026-01-30",
+   "weekday": "friday",
+   "verdict": "reorder",
+   "before_ug": 295.85,
+   "after_ug": 210.61,
+   "reduction_pct": 28.81,
+   "school_hours_pm25_mean": 77.29,
+   "moves": [
+    {
+     "class": "6B",
+     "subject": "Games",
+     "from_slot": "p2",
+     "to_slot": "p8"
+    },
+    {
+     "class": "6B",
+     "subject": "Class Teacher Period",
+     "from_slot": "p8",
+     "to_slot": "p2"
+    }
+   ]
+  }
+ ],
+ "skipped": [
+  {
+   "date": "2025-11-01",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-11-02",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-11-05",
+   "reason": "Guru Nanak's Birthday (gazetted holiday)"
+  },
+  {
+   "date": "2025-11-08",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-11-09",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-11-15",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-11-16",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-11-22",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-11-23",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-11-25",
+   "reason": "Guru Tegh Bahadur Martyrdom Day, 350th (public holiday declared by Delhi Government)"
+  },
+  {
+   "date": "2025-11-29",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-11-30",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-12-06",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-12-07",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-12-13",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-12-14",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-12-20",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-12-21",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2025-12-25",
+   "reason": "Christmas Day (gazetted holiday)"
+  },
+  {
+   "date": "2025-12-27",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2025-12-28",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2026-01-01",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-02",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-03",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-04",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-05",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-06",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-07",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-08",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-09",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-10",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-11",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-12",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-13",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-14",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-15",
+   "reason": "Winter vacation (Delhi Directorate of Education, academic calendar 2025-26)"
+  },
+  {
+   "date": "2026-01-17",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2026-01-18",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2026-01-24",
+   "reason": "No classes on saturday"
+  },
+  {
+   "date": "2026-01-25",
+   "reason": "No classes on sunday"
+  },
+  {
+   "date": "2026-01-26",
+   "reason": "Republic Day (gazetted holiday)"
+  },
+  {
+   "date": "2026-01-31",
+   "reason": "No classes on saturday"
+  }
+ ],
+ "hourly_profile": [
+  {
+   "hour": 7,
+   "median_pm25": 132.5,
+   "days": 50
+  },
+  {
+   "hour": 8,
+   "median_pm25": 135.7,
+   "days": 50
+  },
+  {
+   "hour": 9,
+   "median_pm25": 125.0,
+   "days": 50
+  },
+  {
+   "hour": 10,
+   "median_pm25": 106.75,
+   "days": 50
+  },
+  {
+   "hour": 11,
+   "median_pm25": 88.25,
+   "days": 50
+  },
+  {
+   "hour": 12,
+   "median_pm25": 72.6,
+   "days": 50
+  },
+  {
+   "hour": 13,
+   "median_pm25": 65.9,
+   "days": 50
+  }
+ ]
+}

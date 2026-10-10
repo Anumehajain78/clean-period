@@ -1,10 +1,58 @@
 @import "tailwindcss";
 
-:root {
-  font-family: system-ui, "Noto Sans", "Noto Sans Devanagari", sans-serif;
-  color-scheme: light;
+@theme {
+  --color-paper: #f7f5f0;
+  --color-surface: #ffffff;
+  --color-ink: #1c2321;
+  --color-muted: #5e6762;
+  --color-line: #dad6cc;
+  --color-wash: #efece4;
+  --color-accent: #1e5c4b;
+  --color-accent-dark: #17493b;
+  --color-accent-wash: #e3eee9;
+  --color-warn: #9a4a06;
+  --color-warn-wash: #f8ecdc;
+  --color-bad: #a63232;
+
+  /* CPCB PM2.5 bands */
+  --color-aqi-good: #2e9e5b;
+  --color-aqi-satisfactory: #86b43a;
+  --color-aqi-moderate: #d9ad00;
+  --color-aqi-poor: #e8871e;
+  --color-aqi-verypoor: #d64545;
+  --color-aqi-severe: #8b1e3f;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+    "Noto Sans Devanagari", "Nirmala UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-  @apply bg-stone-50 text-stone-900 antialiased;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
 }
