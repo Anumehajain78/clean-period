@@ -1,17 +1,20 @@
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 
-// In dev, /api goes to the local API (python scripts/local_api.py).
-// In production, set VITE_API_URL to the API Gateway URL.
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:8787',
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
+// In `npm run dev`, requests to /api are forwarded to VITE_API_URL so the
+// browser does not hit the API's CORS rule (it only allows the deployed site).
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const target = (env.VITE_API_URL || '').replace(/\/$/, '')
+  return {
+    plugins: [react(), tailwindcss()],
+    server: target
+      ? {
+          proxy: {
+            '/api': { target, changeOrigin: true, secure: true, rewrite: (path) => path.replace(/^\/api/, '') },
+          },
+        }
+      : {},
+  }
 })

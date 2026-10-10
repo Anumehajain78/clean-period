@@ -1,0 +1,483 @@
+{
+  "_note": "SAMPLE timetable for testing, not a real school's timetable. Transcribed from data/class6_timetable.png. Teacher codes as printed there.",
+  "school": {
+    "name": "Chinmaya Vidyalaya, Vasant Vihar",
+    "address": "Near Priya Cinema, Indian Air Lines & Air India Estate, Vasant Vihar, New Delhi, Delhi 110057",
+    "latitude": 28.5629,
+    "longitude": 77.1678,
+    "location_source": "OpenStreetMap Nominatim, centroid of Vasant Vihar 110057",
+    "timezone": "Asia/Kolkata",
+    "ground_capacity": null
+  },
+  "session": "2026-27",
+  "slots": [
+    {
+      "id": "assembly",
+      "start": "07:40",
+      "end": "08:00"
+    },
+    {
+      "id": "p1",
+      "start": "08:00",
+      "end": "08:40"
+    },
+    {
+      "id": "p2",
+      "start": "08:40",
+      "end": "09:20"
+    },
+    {
+      "id": "p3",
+      "start": "09:20",
+      "end": "10:00"
+    },
+    {
+      "id": "p4",
+      "start": "10:00",
+      "end": "10:40"
+    },
+    {
+      "id": "recess",
+      "start": "10:40",
+      "end": "11:00"
+    },
+    {
+      "id": "p5",
+      "start": "11:00",
+      "end": "11:40"
+    },
+    {
+      "id": "p6",
+      "start": "11:40",
+      "end": "12:20"
+    },
+    {
+      "id": "p7",
+      "start": "12:20",
+      "end": "13:00"
+    },
+    {
+      "id": "p8",
+      "start": "13:00",
+      "end": "13:40"
+    }
+  ],
+  "classes": [
+    {
+      "id": "6B",
+      "name": "Class VI-B",
+      "days": {
+        "monday": [
+          {
+            "slot": "assembly",
+            "subject": "Assembly",
+            "activity": "assembly",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p1",
+            "subject": "PE",
+            "activity": "pe",
+            "teacher": "T-PE",
+            "place": "ground",
+            "movable": true
+          },
+          {
+            "slot": "p2",
+            "subject": "Maths",
+            "activity": "classroom",
+            "teacher": "T-MATH",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p3",
+            "subject": "English",
+            "activity": "classroom",
+            "teacher": "T-ENG",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p4",
+            "subject": "Science",
+            "activity": "classroom",
+            "teacher": "T-SCI",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "recess",
+            "subject": "Recess",
+            "activity": "recess",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p5",
+            "subject": "Hindi",
+            "activity": "classroom",
+            "teacher": "T-HIN",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p6",
+            "subject": "Social Science",
+            "activity": "classroom",
+            "teacher": "T-SST",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p7",
+            "subject": "Computer",
+            "activity": "classroom",
+            "teacher": "T-COMP",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p8",
+            "subject": "Art",
+            "activity": "classroom",
+            "teacher": "T-ART",
+            "place": "classroom",
+            "movable": true
+          }
+        ],
+        "tuesday": [
+          {
+            "slot": "assembly",
+            "subject": "Assembly",
+            "activity": "assembly",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p1",
+            "subject": "Maths",
+            "activity": "classroom",
+            "teacher": "T-MATH",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p2",
+            "subject": "Science",
+            "activity": "classroom",
+            "teacher": "T-SCI",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p3",
+            "subject": "Sanskrit",
+            "activity": "classroom",
+            "teacher": "T-SKT",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p4",
+            "subject": "English",
+            "activity": "classroom",
+            "teacher": "T-ENG",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "recess",
+            "subject": "Recess",
+            "activity": "recess",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p5",
+            "subject": "Yoga",
+            "activity": "indoor_activity",
+            "teacher": "T-PE",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p6",
+            "subject": "Hindi",
+            "activity": "classroom",
+            "teacher": "T-HIN",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p7",
+            "subject": "Social Science",
+            "activity": "classroom",
+            "teacher": "T-SST",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p8",
+            "subject": "Library",
+            "activity": "classroom",
+            "teacher": "T-LIB",
+            "place": "classroom",
+            "movable": true
+          }
+        ],
+        "wednesday": [
+          {
+            "slot": "assembly",
+            "subject": "Assembly",
+            "activity": "assembly",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p1",
+            "subject": "English",
+            "activity": "classroom",
+            "teacher": "T-ENG",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p2",
+            "subject": "PE",
+            "activity": "pe",
+            "teacher": "T-PE",
+            "place": "ground",
+            "movable": true
+          },
+          {
+            "slot": "p3",
+            "subject": "Maths",
+            "activity": "classroom",
+            "teacher": "T-MATH",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p4",
+            "subject": "Hindi",
+            "activity": "classroom",
+            "teacher": "T-HIN",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "recess",
+            "subject": "Recess",
+            "activity": "recess",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p5",
+            "subject": "Science",
+            "activity": "classroom",
+            "teacher": "T-SCI",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p6",
+            "subject": "Music",
+            "activity": "classroom",
+            "teacher": "T-MUS",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p7",
+            "subject": "Sanskrit",
+            "activity": "classroom",
+            "teacher": "T-SKT",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p8",
+            "subject": "Social Science",
+            "activity": "classroom",
+            "teacher": "T-SST",
+            "place": "classroom",
+            "movable": true
+          }
+        ],
+        "thursday": [
+          {
+            "slot": "assembly",
+            "subject": "Assembly",
+            "activity": "assembly",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p1",
+            "subject": "Science",
+            "activity": "classroom",
+            "teacher": "T-SCI",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p2",
+            "subject": "Maths",
+            "activity": "classroom",
+            "teacher": "T-MATH",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p3",
+            "subject": "Hindi",
+            "activity": "classroom",
+            "teacher": "T-HIN",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p4",
+            "subject": "Computer",
+            "activity": "classroom",
+            "teacher": "T-COMP",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "recess",
+            "subject": "Recess",
+            "activity": "recess",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p5",
+            "subject": "English",
+            "activity": "classroom",
+            "teacher": "T-ENG",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p6",
+            "subject": "Social Science",
+            "activity": "classroom",
+            "teacher": "T-SST",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p7",
+            "subject": "Art",
+            "activity": "classroom",
+            "teacher": "T-ART",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p8",
+            "subject": "Sanskrit",
+            "activity": "classroom",
+            "teacher": "T-SKT",
+            "place": "classroom",
+            "movable": true
+          }
+        ],
+        "friday": [
+          {
+            "slot": "assembly",
+            "subject": "Assembly",
+            "activity": "assembly",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p1",
+            "subject": "Maths",
+            "activity": "classroom",
+            "teacher": "T-MATH",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p2",
+            "subject": "Games",
+            "activity": "pe",
+            "teacher": "T-PE",
+            "place": "ground",
+            "movable": true
+          },
+          {
+            "slot": "p3",
+            "subject": "English",
+            "activity": "classroom",
+            "teacher": "T-ENG",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p4",
+            "subject": "Science",
+            "activity": "classroom",
+            "teacher": "T-SCI",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "recess",
+            "subject": "Recess",
+            "activity": "recess",
+            "teacher": null,
+            "place": "ground",
+            "movable": false
+          },
+          {
+            "slot": "p5",
+            "subject": "Hindi",
+            "activity": "classroom",
+            "teacher": "T-HIN",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p6",
+            "subject": "Music",
+            "activity": "classroom",
+            "teacher": "T-MUS",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p7",
+            "subject": "Social Science",
+            "activity": "classroom",
+            "teacher": "T-SST",
+            "place": "classroom",
+            "movable": true
+          },
+          {
+            "slot": "p8",
+            "subject": "Class Teacher Period",
+            "activity": "classroom",
+            "teacher": "T-CLASS",
+            "place": "classroom",
+            "movable": true
+          }
+        ]
+      }
+    }
+  ]
+}
