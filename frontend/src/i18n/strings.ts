@@ -66,7 +66,6 @@ export const en = {
   // Result
   verdictRearranged: '{n} periods moved to cleaner hours',
   verdictRearrangedOne: '1 period moved to a cleaner hour',
-  verdictUnchanged: 'The current order is already the best one',
   verdictAllIndoors: 'All indoors',
   verdictAllIndoorsBody: 'Air stays Very Poor or worse through every school hour. Choose below: move outdoor periods indoors, or cancel the outdoor activity.',
   doseCut: 'Dose cut',
@@ -264,6 +263,11 @@ export const en = {
   badDayCancelBody: 'Children stay in class for those periods, sitting. The lowest dose; the period is kept, the activity is not.',
   badDayNote: 'Estimated dose cut for all classes, compared with the original timetable.',
   activityCancelled: 'activity cancelled, stay in class',
+  verdictNoMove: 'No period moved',
+  whyNoOutdoor: 'This timetable has no PE or sports period, so there is nothing to move to cleaner air.',
+  whyOutdoorFixed: 'PE is ticked Fixed, so it cannot move. Untick Fixed for PE on the Timetable tab, then make the plan again.',
+  whyNoPartner: 'PE has no movable period of the same length to swap with. Untick Fixed on some classroom periods, or check their times.',
+  whyAlreadyBest: "The current order already gives the lowest dose for tomorrow's air.",
 } as const
 
 export type Key = keyof typeof en
@@ -328,7 +332,6 @@ export const hi: Record<Key, string> = {
 
   verdictRearranged: '{n} पीरियड साफ़ घंटों में ले जाए गए',
   verdictRearrangedOne: '1 पीरियड साफ़ घंटे में ले जाया गया',
-  verdictUnchanged: 'मौजूदा क्रम पहले से सबसे अच्छा है',
   verdictAllIndoors: 'सब कुछ अंदर',
   verdictAllIndoorsBody: 'स्कूल के हर घंटे में हवा बहुत खराब या उससे बदतर रहेगी। नीचे चुनें: बाहर के पीरियड अंदर करें, या बाहर की गतिविधि रद्द करें।',
   doseCut: 'खुराक में कमी',
@@ -523,4 +526,9 @@ export const hi: Record<Key, string> = {
   badDayCancelBody: 'उन पीरियड में बच्चे कक्षा में बैठे रहेंगे। सबसे कम खुराक; पीरियड रहेगा, गतिविधि नहीं।',
   badDayNote: 'सभी कक्षाओं के लिए अनुमानित कमी, मूल समय-सारणी की तुलना में।',
   activityCancelled: 'गतिविधि रद्द, कक्षा में रहेंगे',
+  verdictNoMove: 'कोई पीरियड नहीं बदला',
+  whyNoOutdoor: 'इस समय-सारणी में खेल का कोई पीरियड नहीं है, इसलिए साफ़ हवा में ले जाने को कुछ नहीं।',
+  whyOutdoorFixed: 'खेल पर “तय” लगा है, इसलिए वह नहीं बदल सकता। समय-सारणी टैब में खेल से “तय” हटाएँ, फिर योजना दोबारा बनाएँ।',
+  whyNoPartner: 'खेल से अदला-बदली के लिए उतनी ही लंबाई का कोई बदलने योग्य पीरियड नहीं है। कुछ कक्षा पीरियड से “तय” हटाएँ, या उनके समय देखें।',
+  whyAlreadyBest: 'कल की हवा के लिए मौजूदा क्रम में ही सबसे कम खुराक है।',
 }

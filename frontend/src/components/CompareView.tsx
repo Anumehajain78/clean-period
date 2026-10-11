@@ -9,6 +9,16 @@ import { AirRow, DayStrip, stripRange } from './DayStrip'
 import { DownloadButtons } from './DownloadButtons'
 import { Segmented } from './ui'
 
+const NO_MOVE_KEY = {
+  noOutdoor: 'whyNoOutdoor',
+  outdoorFixed: 'whyOutdoorFixed',
+  noPartner: 'whyNoPartner',
+  alreadyBest: 'whyAlreadyBest',
+} as const
+
+/** "−12%", or "0%" when there is no real cut (never "−0%"). */
+const cut = (n: number) => (n >= 0.5 ? `−${fmtNum(n)}%` : '0%')
+
 function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; accent?: boolean }) {
   const { t } = useLang()
   return (
@@ -105,7 +115,7 @@ function BadDayChoiceCard({ plan, onChoose }: { plan: PlanVM; onChoose: (c: 'ind
       >
         <span className="flex w-full items-baseline justify-between gap-2">
           <span className="display text-[16px] font-semibold">{title}</span>
-          <span className="num shrink-0 text-lg font-semibold text-accent">−{fmtNum(pct)}%</span>
+          <span className="num shrink-0 text-lg font-semibold text-accent">{cut(pct)}</span>
         </span>
         <span className="text-sm text-muted">{body}</span>
       </button>
@@ -141,7 +151,7 @@ export function CompareView({ plan, onBadDayChoice }: { plan: PlanVM; onBadDayCh
     plan.verdict === 'all_indoors'
       ? t('verdictAllIndoors')
       : plan.movedCount === 0
-        ? t('verdictUnchanged')
+        ? t('verdictNoMove')
         : plan.movedCount === 1
           ? t('verdictRearrangedOne')
           : t('verdictRearranged', { n: plan.movedCount })
@@ -159,8 +169,13 @@ export function CompareView({ plan, onBadDayChoice }: { plan: PlanVM; onBadDayCh
           <p className="text-[13px] text-muted">{formatDate(plan.date, lang)}</p>
           <h2 className="text-xl font-semibold leading-snug">{verdictTitle}</h2>
           {plan.verdict === 'all_indoors' && <p className="mt-1 text-[15px] text-muted">{t('verdictAllIndoorsBody')}</p>}
+          {plan.noMoveReason && (
+            <p className={'mt-1 text-[15px] ' + (plan.noMoveReason === 'alreadyBest' ? 'text-muted' : 'text-warn')}>
+              {t(NO_MOVE_KEY[plan.noMoveReason])}
+            </p>
+          )}
           <p className="mt-2 flex items-baseline gap-2">
-            <span className="num text-3xl font-semibold text-accent">−{fmtNum(plan.totalCutPct, 0)}%</span>
+            <span className="num text-3xl font-semibold text-accent">{cut(plan.totalCutPct)}</span>
             <span className="text-sm text-muted">
               {t('doseCut')} ({t('estimate')}) · {t('allClasses')}
             </span>
@@ -187,7 +202,7 @@ export function CompareView({ plan, onBadDayChoice }: { plan: PlanVM; onBadDayCh
                 (i === idx ? 'border-accent bg-accent-wash font-medium text-accent' : 'border-line bg-surface hover:bg-wash')
               }
             >
-              {c.name} <span className="num ml-1 text-muted">−{fmtNum(c.cutPct)}%</span>
+              {c.name} <span className="num ml-1 text-muted">{cut(c.cutPct)}</span>
             </button>
           ))}
         </div>
@@ -225,7 +240,7 @@ export function CompareView({ plan, onBadDayChoice }: { plan: PlanVM; onBadDayCh
           <span className="font-semibold">{cls.name}</span>
           <span className="num ml-2 text-muted">
             {fmtNum(cls.doseBefore, 1)} → {fmtNum(cls.doseAfter, 1)} {t('doseUnit')} ({t('estimate')}) ·{' '}
-            <span className="font-semibold text-accent">−{fmtNum(cls.cutPct)}%</span>
+            <span className="font-semibold text-accent">{cut(cls.cutPct)}</span>
           </span>
         </p>
         <Segmented

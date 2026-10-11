@@ -107,6 +107,8 @@ export interface RawPlan {
 
 export type BadDayChoice = 'indoors' | 'cancel'
 
+export type NoMoveReason = 'noOutdoor' | 'outdoorFixed' | 'noPartner' | 'alreadyBest'
+
 // ---- POST /notice ---------------------------------------------------------
 
 export interface NoticeResponse {
@@ -171,6 +173,8 @@ export interface PlanVM {
   assumptions: string[]
   label: string
   raw: RawPlan
+  /** Why nothing moved, when nothing did. */
+  noMoveReason?: NoMoveReason
   /** All-indoors days only: both options' estimated cuts and the one shown. */
   badDay?: { choice: BadDayChoice; indoorsPct: number; cancelPct: number }
 }

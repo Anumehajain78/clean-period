@@ -1,6 +1,7 @@
 import type {
   Activity,
   BadDayChoice,
+  NoMoveReason,
   BacktestVM,
   ClassTimetable,
   PlanRequest,
@@ -10,7 +11,7 @@ import type {
   RowVM,
   School,
 } from './types'
-import { isIndoors, placeOf } from '../lib/format'
+import { isIndoors, minutesBetween, placeOf } from '../lib/format'
 
 // ---------------------------------------------------------------- request
 
@@ -52,6 +53,27 @@ export function buildRequest(school: School, classes: ClassTimetable[]): PlanReq
 }
 
 // --------------------------------------------------------------- response
+
+/** Why a plan moved nothing: the first rule that stopped the outdoor periods. */
+export function noMoveReason(req: PlanRequest): NoMoveReason {
+  const len = new Map(req.slots.map((s) => [s.id, minutesBetween(s.start, s.end)]))
+  let outdoor = 0
+  let movableOutdoor = 0
+  for (const c of req.classes) {
+    for (const p of c.periods.filter((x) => x.activity === 'pe')) {
+      outdoor++
+      if (!p.movable) continue
+      movableOutdoor++
+      const partner = c.periods.some(
+        (q) => q !== p && q.movable && q.activity !== p.activity && len.get(q.slot) === len.get(p.slot),
+      )
+      if (partner) return 'alreadyBest'
+    }
+  }
+  if (outdoor === 0) return 'noOutdoor'
+  if (movableOutdoor === 0) return 'outdoorFixed'
+  return 'noPartner'
+}
 
 /** The plan as the school chose it: on all-indoors days, optionally cancel outdoor activity. */
 export function applyChoice(raw: RawPlan, choice: BadDayChoice): RawPlan {
@@ -131,6 +153,7 @@ export function toPlanVM(raw: RawPlan, req: PlanRequest, indoorsPct?: number): P
     assumptions: raw.assumptions ?? [],
     label: raw.label ?? '',
     raw,
+    noMoveReason: raw.verdict === 'reorder' && movedCount === 0 ? noMoveReason(req) : undefined,
     badDay:
       raw.verdict === 'all_indoors' && raw.alternatives
         ? { choice: raw.choice ?? 'indoors', indoorsPct: indoorsPct ?? raw.reduction_pct, cancelPct: raw.alternatives.cancel.reduction_pct }
