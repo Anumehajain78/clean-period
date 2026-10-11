@@ -5,6 +5,7 @@ import { ALL_INDOORS_THRESHOLD, bandFor } from '../lib/aqi'
 import { fmtNum, formatDate, hourOf } from '../lib/format'
 import { ACTIVITY_KEY } from './TimetableEditor'
 import { AqiChart } from './AqiChart'
+import { AirRow, DayStrip, stripRange } from './DayStrip'
 import { Segmented } from './ui'
 
 function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; accent?: boolean }) {
@@ -53,6 +54,34 @@ function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; acc
           )
         })}
       </ul>
+    </section>
+  )
+}
+
+function DayCompare({ cls, hours }: { cls: PlanVM['classes'][number]; hours: PlanVM['hours'] }) {
+  const { t } = useLang()
+  const toStrip = (rows: RowVM[], after: boolean) =>
+    rows.map((r) => ({
+      start: r.start,
+      end: r.end,
+      subject: r.subject,
+      outdoor: !r.indoors,
+      highlight: after && (!!r.movedFrom || !!r.madeIndoor),
+    }))
+  const before = toStrip(cls.before, false)
+  const after = toStrip(cls.after, true)
+  const range = stripRange([before, after])
+  if (!range) return null
+  return (
+    <section className="rounded-xl border border-line bg-surface p-4">
+      <h3 className="display mb-3 text-[16px] font-semibold">{t('compareStripTitle')}</h3>
+      <div className="space-y-2 pb-4">
+        <AirRow hours={hours} range={range} label={t('stripAir')} />
+        <div className="h-3" />
+        <DayStrip periods={before} range={range} label={t('before')} />
+        <DayStrip periods={after} range={range} label={t('after')} />
+      </div>
+      <p className="mt-2 text-xs text-muted">{t('compareStripHelp')}</p>
     </section>
   )
 }
@@ -125,6 +154,8 @@ export function CompareView({ plan }: { plan: PlanVM }) {
           ))}
         </div>
       )}
+
+      <DayCompare cls={cls} hours={plan.hours} />
 
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-[15px]">
