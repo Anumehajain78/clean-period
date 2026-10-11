@@ -25,3 +25,6 @@ samconfig.toml.bak
 
 # Local Claude Code launch config (machine-specific paths)
 .claude/
+
+# Demo video script (kept off GitHub)
+docs/demo-script.md

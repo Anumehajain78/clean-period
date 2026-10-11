@@ -191,7 +191,7 @@ frontend/            React site
 infra/               SAM template, GitHub deploy role
 scripts/             fetch_history, backtest, local_api
 data/                sample timetable, history, calendar, backtest result
-docs/                architecture, API, demo script
+docs/                architecture, API
 ```
 
 ## Team
