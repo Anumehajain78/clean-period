@@ -179,16 +179,6 @@ export interface PlanVM {
   badDay?: { choice: BadDayChoice; indoorsPct: number; cancelPct: number }
 }
 
-export interface BacktestVM {
-  seasonCutPct: number
-  meanDailyCutPct: number | null
-  schoolDays: number | null
-  from: string | null
-  to: string | null
-  days: { date: string; cutPct: number }[]
-  label?: string
-  assumptions: string[]
-}
 
 // ---- POST /outlook and POST /backtest ---------------------------------------
 

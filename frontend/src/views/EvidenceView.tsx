@@ -1,12 +1,39 @@
 import { useEffect, useState } from 'react'
-import { normalizeBacktest } from '../api/adapt'
 import { loadStatic } from '../api/client'
-import type { BacktestVM } from '../api/types'
 import { Button, Notice, Spinner } from '../components/ui'
 import { useLang } from '../i18n/lang'
-import { fmtNum } from '../lib/format'
+import { bandFor } from '../lib/aqi'
+import { fmtNum, formatDay, weekdayLabel } from '../lib/format'
 
-export function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
+// ---- data/backtest_result.json (written by scripts/backtest.py) ----------------
+
+interface EvidenceFile {
+  period: { start: string; end: string }
+  sources: { air_quality: string; inhalation_rates: string; pm25_categories: string }
+  assumptions: string[]
+  assumptions_hi?: string[]
+  label: string
+  label_hi?: string
+  summary: {
+    school_days: number
+    all_indoors_days: number
+    season_reduction_pct: number
+    mean_daily_reduction_pct: number
+    by_weekday: Record<string, { days: number; mean_reduction_pct: number }>
+  }
+  days: { date: string; verdict: string; reduction_pct: number }[]
+  hourly_profile: { hour: number; median_pm25: number; days: number }[]
+}
+
+function isEvidence(x: unknown): x is EvidenceFile {
+  const d = x as EvidenceFile
+  return !!d && typeof d.summary?.season_reduction_pct === 'number' && Array.isArray(d.days) && Array.isArray(d.hourly_profile)
+}
+
+// ---- charts (also used by the "Last winter" tab) -------------------------------
+
+/** One bar per school day; all-indoors days in red. */
+export function DailyCutChart({ data }: { data: { date: string; cutPct: number; allIndoors?: boolean }[] }) {
   const { t, lang } = useLang()
   const W = 640
   const H = 190
@@ -36,7 +63,7 @@ export function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
         <g key={v}>
           <line x1={L} x2={W - R} y1={y(v)} y2={y(v)} stroke="var(--color-line)" />
           <text x={L - 5} y={y(v) + 3} textAnchor="end" fontSize="10" fill="var(--color-muted)" className="num">
-            {v}
+            {v}%
           </text>
         </g>
       ))}
@@ -45,11 +72,12 @@ export function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
           key={d.date}
           x={L + i * bw + 0.5}
           y={y(Math.max(d.cutPct, 0))}
-          width={Math.max(bw - 1, 1)}
+          width={Math.max(bw - 1.5, 1)}
           height={Math.max(H - B - y(Math.max(d.cutPct, 0)), 0)}
-          fill="var(--color-accent)"
+          rx={1}
+          fill={d.allIndoors ? 'var(--color-aqi-verypoor)' : 'var(--color-accent)'}
         >
-          <title>{`${d.date}: −${fmtNum(d.cutPct, 1)}%`}</title>
+          <title>{`${d.date}: −${fmtNum(d.cutPct, 1)}%${d.allIndoors ? ' · all indoors' : ''}`}</title>
         </rect>
       ))}
       {monthLabels.map((m) => (
@@ -58,6 +86,26 @@ export function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
         </text>
       ))}
     </svg>
+  )
+}
+
+/** Typical PM2.5 for each school hour, in CPCB colours. */
+function HourProfile({ rows }: { rows: { hour: number; median_pm25: number }[] }) {
+  const { t } = useLang()
+  const max = Math.max(...rows.map((r) => r.median_pm25)) * 1.15
+  return (
+    <div className="flex h-48 items-end gap-2" role="img" aria-label={t('evHourTitle')}>
+      {rows.map((r) => (
+        <div key={r.hour} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+          <span className="num text-sm font-semibold">{Math.round(r.median_pm25)}</span>
+          <div
+            className="w-full rounded-t-md"
+            style={{ height: `${(r.median_pm25 / max) * 100}%`, background: bandFor(r.median_pm25).color }}
+          />
+          <span className="num text-xs text-muted">{String(r.hour).padStart(2, '0')}:00</span>
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -71,44 +119,34 @@ export function Stat({ label, value, help, big }: { label: string; value: string
   )
 }
 
-export function EvidenceView() {
+// ---- page ---------------------------------------------------------------------
+
+export function EvidenceView({ onTryOwn }: { onTryOwn?: () => void }) {
   const { t, lang } = useLang()
-  const [data, setData] = useState<BacktestVM | null>(null)
+  const [data, setData] = useState<EvidenceFile | null>(null)
   const [state, setState] = useState<'loading' | 'missing' | 'unexpected' | 'ok'>('loading')
 
   const load = () => {
     setState('loading')
     loadStatic<unknown>('backtest_result.json')
       .then((raw) => {
-        const vm = normalizeBacktest(raw)
-        if (!vm) return setState('unexpected')
-        setData(vm)
+        if (!isEvidence(raw)) return setState('unexpected')
+        setData(raw)
         setState('ok')
       })
       .catch(() => setState('missing'))
   }
   useEffect(load, [])
 
-  const fmtDay = (iso: string) =>
-    new Date(iso + 'T00:00:00').toLocaleDateString(lang === 'hi' ? 'hi-IN' : 'en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    })
+  const s = data?.summary
+  const morning = data?.hourly_profile.find((h) => h.hour === 8)
+  const afternoon = data?.hourly_profile.find((h) => h.hour === 13)
+  const weekdays = s ? Object.entries(s.by_weekday) : []
+  const maxDay = Math.max(1, ...weekdays.map(([, w]) => w.mean_reduction_pct))
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-[1100px] space-y-5 px-4 py-5 lg:px-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="max-w-2xl">
-            <h1 className="text-2xl font-semibold tracking-tight">{t('evidenceTitle')}</h1>
-            <p className="mt-1 text-muted">{t('evidenceLead')}</p>
-          </div>
-          <span className="rounded-[4px] border border-warn/30 bg-warn-wash px-2.5 py-1 text-sm font-medium text-warn">
-            {t('sampleBanner')}
-          </span>
-        </div>
-
+      <div className="mx-auto max-w-[1100px] space-y-8 px-4 py-6 lg:px-6">
         {state === 'loading' && (
           <p className="flex items-center gap-2 text-muted">
             <Spinner /> {t('evidenceLoading')}
@@ -123,49 +161,117 @@ export function EvidenceView() {
           </div>
         )}
 
-        {state === 'ok' && data && (
+        {state === 'ok' && data && s && (
           <>
+            <header className="max-w-3xl">
+              <p className="text-sm font-medium uppercase tracking-wide text-accent">{t('evEyebrow')}</p>
+              <h1 className="display mt-1 text-3xl font-semibold leading-tight sm:text-4xl">
+                {t('evHeadline', { pct: fmtNum(s.season_reduction_pct, 0) })}
+              </h1>
+              <p className="mt-3 text-[17px] text-muted">{t('evidenceLead')}</p>
+              <p className="mt-3 text-sm text-ink">
+                {t('evContext', { from: formatDay(data.period.start, lang), to: formatDay(data.period.end, lang) })}
+              </p>
+            </header>
+
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="sm:col-span-2 lg:col-span-1">
-                <Stat big label={t('seasonCut')} value={`−${fmtNum(data.seasonCutPct, 1)}%`} help={t('seasonCutHelp')} />
-              </div>
-              {data.meanDailyCutPct != null && (
-                <Stat label={t('meanDailyCut')} value={`−${fmtNum(data.meanDailyCutPct, 1)}%`} help={t('meanDailyHelp')} />
-              )}
-              {data.schoolDays != null && <Stat label={t('schoolDays')} value={fmtNum(data.schoolDays)} />}
-              {data.from && data.to && <Stat label={t('period')} value={`${fmtDay(data.from)} – ${fmtDay(data.to)}`} />}
+              <Stat big label={t('seasonCut')} value={`−${fmtNum(s.season_reduction_pct, 1)}%`} help={t('seasonCutHelp')} />
+              <Stat label={t('meanDailyCut')} value={`−${fmtNum(s.mean_daily_reduction_pct, 1)}%`} help={t('meanDailyHelp')} />
+              <Stat label={t('schoolDays')} value={fmtNum(s.school_days)} help={t('evDaysHelp')} />
+              <Stat label={t('winterIndoors')} value={fmtNum(s.all_indoors_days)} help={t('winterIndoorsHelp')} />
             </div>
 
-            <section className="rounded-[4px] border border-line bg-surface p-4">
-              <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
-                <h2 className="text-sm font-semibold">{t('dailyCutTitle')}</h2>
-                <span className="text-xs text-muted">
-                  {t('dailyCutAxis')} ({t('estimate')})
+            <section className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
+              <div className="rounded-xl border border-line bg-surface p-5">
+                <h2 className="display text-lg font-semibold">{t('evHourTitle')}</h2>
+                <p className="mb-4 mt-1 text-sm text-muted">
+                  {morning && afternoon
+                    ? t('evHourBody', {
+                        am: fmtNum(morning.median_pm25, 0),
+                        pm: fmtNum(afternoon.median_pm25, 0),
+                        x: fmtNum(morning.median_pm25 / afternoon.median_pm25, 1),
+                      })
+                    : ''}
+                </p>
+                <HourProfile rows={data.hourly_profile} />
+                <p className="mt-3 text-xs text-muted">{t('evHourNote')}</p>
+              </div>
+
+              <div className="rounded-xl border border-line bg-surface p-5">
+                <h2 className="display text-lg font-semibold">{t('evWeekdayTitle')}</h2>
+                <p className="mb-4 mt-1 text-sm text-muted">{t('evWeekdayBody')}</p>
+                <ul className="space-y-3">
+                  {weekdays.map(([day, w]) => (
+                    <li key={day} className="grid grid-cols-[88px_minmax(0,1fr)_56px] items-center gap-3">
+                      <span className="text-sm font-medium">{weekdayLabel(day, lang)}</span>
+                      <span className="h-3 rounded-full bg-wash">
+                        <span
+                          className="block h-3 rounded-full bg-accent"
+                          style={{ width: `${Math.max((w.mean_reduction_pct / maxDay) * 100, 1.5)}%` }}
+                        />
+                      </span>
+                      <span className="num text-right text-sm font-semibold">{w.mean_reduction_pct >= 0.5 ? `−${fmtNum(w.mean_reduction_pct, 0)}%` : '0%'}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-line bg-surface p-5">
+              <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+                <h2 className="display text-lg font-semibold">{t('dailyCutTitle')}</h2>
+                <span className="flex items-center gap-3 text-xs text-muted">
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-sm bg-accent" /> {t('evLegendMoved')}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block h-2.5 w-2.5 rounded-sm bg-aqi-verypoor" /> {t('evLegendIndoors')}
+                  </span>
                 </span>
               </div>
-              {data.days.length > 0 && <DailyCutChart data={data.days} />}
+              <DailyCutChart
+                data={data.days.map((d) => ({ date: d.date, cutPct: d.reduction_pct, allIndoors: d.verdict === 'all_indoors' }))}
+              />
             </section>
-            {data.assumptions.length > 0 && (
-              <ul className="list-disc space-y-0.5 pl-5 text-xs text-muted">
-                {data.assumptions.map((a, i) => (
-                  <li key={i}>{a}</li>
-                ))}
-              </ul>
+
+            {onTryOwn && (
+              <section className="flex flex-wrap items-center justify-between gap-4 rounded-xl bg-accent px-5 py-4 text-white">
+                <div>
+                  <h2 className="display text-lg font-semibold">{t('evTryTitle')}</h2>
+                  <p className="text-sm text-white/85">{t('evTryBody')}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onTryOwn}
+                  className="h-10 rounded-md bg-white px-4 font-medium text-accent hover:bg-accent-wash"
+                >
+                  {t('evTryButton')}
+                </button>
+              </section>
             )}
-            {data.label && <p className="text-xs text-muted">{data.label}</p>}
+
+            <details className="group rounded-xl border border-line bg-surface">
+              <summary className="flex h-12 cursor-pointer list-none items-center justify-between px-5 font-medium">
+                {t('evHowTitle')}
+                <span className="text-muted transition-transform group-open:rotate-180">⌄</span>
+              </summary>
+              <div className="space-y-3 border-t border-line px-5 py-4 text-sm text-muted">
+                <ul className="list-disc space-y-1 pl-5">
+                  <li>{t('evHowTimetable')}</li>
+                  <li>{t('noteCalendar')}</li>
+                  <li>{t('noteGrap')}</li>
+                  {(lang === 'hi' ? data.assumptions_hi ?? data.assumptions : data.assumptions).map((a, i) => (
+                    <li key={i}>{a}</li>
+                  ))}
+                </ul>
+                <p>
+                  <span className="font-medium text-ink">{t('airSource')}:</span> {data.sources.air_quality}
+                </p>
+                <p>{lang === 'hi' ? data.label_hi ?? data.label : data.label}</p>
+              </div>
+            </details>
           </>
         )}
-
-        <section>
-          <h2 className="mb-1 text-sm font-semibold">{t('evidenceNotes')}</h2>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
-            <li>{t('noteSample')}</li>
-            <li>{t('noteGrap')}</li>
-            <li>{t('noteCalendar')}</li>
-            <li>{t('noteApprox')}</li>
-            <li>{t('dataSource')}</li>
-          </ul>
-        </section>
       </div>
     </div>
   )

@@ -88,7 +88,11 @@ Show the data source on screen.
 The timetable is `data/sample_timetable.json` (Class VI-B), transcribed from
 `data/class6_timetable.png`. It is a SAMPLE timetable, not the real timetable of
 any school. Location: Chinmaya Vidyalaya, Vasant Vihar, New Delhi (28.5629,
-77.1678). The UI, README and demo must say "sample timetable, real air data".
+77.1678). The README says "sample timetable, real air data". The Evidence
+page (decided 2026-10-11) calls it "a typical Class VI timetable" with real air
+for Vasant Vihar, does not name the school, and says under "How this was
+measured" that it is not a particular school's timetable. Never present it as
+a real school's timetable.
 Swap in a real timetable if we get one.
 
 School days skip weekends and the closures in

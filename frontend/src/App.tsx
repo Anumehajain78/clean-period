@@ -14,7 +14,7 @@ export default function App() {
         <div className={view === 'plan' ? 'h-full' : 'hidden'}>
           <PlanView />
         </div>
-        {view === 'evidence' && <EvidenceView />}
+        {view === 'evidence' && <EvidenceView onTryOwn={() => setView('plan')} />}
         {view === 'method' && <MethodView />}
       </main>
     </div>
