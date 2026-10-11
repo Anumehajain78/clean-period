@@ -169,3 +169,40 @@ export interface BacktestVM {
   label?: string
   assumptions: string[]
 }
+
+// ---- POST /outlook and POST /backtest ---------------------------------------
+
+export interface OutlookDay {
+  date: string
+  weekday: string
+  status: 'planned' | 'no_forecast'
+  verdict?: 'reorder' | 'all_indoors'
+  reduction_pct?: number
+  moved?: number
+  school_mean_pm25?: number
+  school_max_pm25?: number
+  category?: string
+  hours?: { hour: number; pm25: number }[]
+  cleanest?: boolean
+}
+
+export interface OutlookResponse {
+  days: OutlookDay[]
+  source: string
+  category_note?: string
+  label: string
+  label_hi: string
+}
+
+export interface WinterResponse {
+  summary: { school_days: number; all_indoors_days: number; season_reduction_pct: number; mean_daily_reduction_pct: number }
+  days: { date: string; reduction_pct: number; verdict: string }[]
+  skipped: number
+  period: { start: string; end: string }
+  source: string
+  grid_point: { latitude: number; longitude: number }
+  assumptions: string[]
+  assumptions_hi: string[]
+  label: string
+  label_hi: string
+}

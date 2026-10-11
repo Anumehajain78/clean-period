@@ -1,4 +1,4 @@
-import type { ExtractResponse, NoticeResponse, PlanRequest, RawPlan } from './types'
+import type { ExtractResponse, NoticeResponse, OutlookResponse, PlanRequest, RawPlan, WinterResponse } from './types'
 
 // In `npm run dev`, calls go to /api on the dev server, which forwards them to
 // VITE_API_URL (see vite.config.ts). That avoids the browser CORS block on
@@ -49,6 +49,8 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ plan, school_name: schoolName, use_ai: true }),
     }),
+  outlook: (body: PlanRequest) => request<OutlookResponse>('/outlook', { method: 'POST', body: JSON.stringify(body) }),
+  backtest: (body: PlanRequest) => request<WinterResponse>('/backtest', { method: 'POST', body: JSON.stringify(body) }),
   extract: (image: string, mediaType: string) =>
     request<ExtractResponse>('/extract', {
       method: 'POST',
