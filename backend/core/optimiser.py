@@ -91,12 +91,24 @@ def plan_day(slots, classes, pm25_by_hour, config, ground_capacity=None):
 
     all_periods = [p for b in befores for p in b["periods"]]
     if thresholds.needs_all_indoors(pm25_by_hour, all_periods, config):
-        results = []
+        # Two choices for the school: outdoor periods become indoor activity
+        # (the plan), or the outdoor activity is cancelled and the class stays
+        # in its room (the "cancel" alternative, lowest dose).
+        results, cancelled = [], []
         for cls, before in zip(classes, befores):
-            indoor = thresholds.to_all_indoors(before["periods"], config)
-            after = dose.day_dose(indoor, pm25_by_hour, config)
-            results.append(_class_result(cls, before, after, []))
-        return _plan("all_indoors", results)
+            indoor = dose.day_dose(thresholds.to_all_indoors(before["periods"], config), pm25_by_hour, config)
+            results.append(_class_result(cls, before, indoor, []))
+            stay = dose.day_dose(thresholds.cancel_outdoor(before["periods"], config), pm25_by_hour, config)
+            cancelled.append({"id": cls["id"], "after": stay["periods"], "after_ug": stay["total_ug"],
+                              "reduction_pct": dose.reduction_pct(before["total_ug"], stay["total_ug"])})
+        plan = _plan("all_indoors", results)
+        total = sum(c["after_ug"] for c in cancelled)
+        plan["alternatives"] = {"cancel": {
+            "classes": cancelled,
+            "total_after_ug": total,
+            "reduction_pct": dose.reduction_pct(plan["total_before_ug"], total),
+        }}
+        return plan
 
     length = {s["id"]: dose.parse_hhmm(s["end"]) - dose.parse_hhmm(s["start"]) for s in slots}
     times = {s["id"]: (s["start"], s["end"]) for s in slots}

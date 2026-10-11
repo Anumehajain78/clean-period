@@ -48,7 +48,8 @@ def facts(plan, school_name):
             "reduction_pct": round(c["reduction_pct"]),
             "moves": [{"subject": m["subject"], "from": start[m["from_slot"]], "to": start[m["to_slot"]]}
                       for m in c["moves"] if m["subject"] in outdoor],
-            "made_indoor": [p["subject"] for p in c["after"] if p.get("converted_from")],
+            "made_indoor": [p["subject"] for p in c["after"] if p.get("converted_from") and not p.get("cancelled")],
+            "cancelled": [p["subject"] for p in c["after"] if p.get("cancelled")],
         })
 
     return {
@@ -92,7 +93,16 @@ def template(f):
         en.append(f"This is the plan for {date_en} at {f['school']}.")
         hi.append(f"यह {f['school']} में {date_hi} की योजना है।")
 
-    if f["verdict"] == "all_indoors":
+    if f["verdict"] == "all_indoors" and any(cls.get("cancelled") for cls in f["classes"]):
+        en.append("The air is expected to be Very Poor or worse for the whole school day, "
+                  "so all outdoor activities are cancelled. Children stay in class for those periods:")
+        hi.append("पूरे स्कूल समय हवा \"बहुत खराब\" या उससे बुरी रहने की संभावना है, "
+                  "इसलिए बाहर की सभी गतिविधियाँ रद्द हैं। उन पीरियड में बच्चे कक्षा में रहेंगे:")
+        for cls in f["classes"]:
+            subjects = ", ".join(cls["cancelled"])
+            en.append(f"- {cls['name']}: {subjects} cancelled, stay in class (estimated dose cut about {cls['reduction_pct']}%).")
+            hi.append(f"- {cls['name']}: {subjects} रद्द, कक्षा में रहेंगे (अनुमानित कमी लगभग {cls['reduction_pct']}%)।")
+    elif f["verdict"] == "all_indoors":
         en.append("The air is expected to be Very Poor or worse for the whole school day, "
                   "so all outdoor periods will be held indoors:")
         hi.append("पूरे स्कूल समय हवा \"बहुत खराब\" या उससे बुरी रहने की संभावना है, "
@@ -161,6 +171,10 @@ def check(notice, f):
             for m in cls["moves"]:
                 if m["from"] not in plain or m["to"] not in plain:
                     problems.append(f"{lang}: missing move of {m['subject']} from {m['from']} to {m['to']}")
+        if any(c.get("cancelled") for c in f["classes"]):
+            word = "cancel" if lang == "en" else "रद्द"
+            if word not in plain.lower():
+                problems.append(f"{lang}: must say the outdoor activity is cancelled ({word})")
         if needs_pct:
             for cls in f["classes"]:
                 if f"{cls['reduction_pct']}%" not in plain.replace(" %", "%"):

@@ -49,3 +49,19 @@ def to_all_indoors(periods, config):
             out.append({**p, "activity": "indoor_activity", "place": "classroom",
                         "converted_from": p["activity"]})
     return out
+
+
+def cancel_outdoor(periods, config):
+    """Copies of the periods with every outdoor activity cancelled: the class
+    stays in its classroom for that period (sitting), so the period itself is
+    kept. Cancelled periods carry `cancelled` and `converted_from`.
+    """
+    out = []
+    for p in periods:
+        _, indoors = activity_profile(p["activity"], config)
+        if indoors:
+            out.append(dict(p))
+        else:
+            out.append({**p, "activity": "classroom", "place": "classroom",
+                        "converted_from": p["activity"], "cancelled": True})
+    return out
