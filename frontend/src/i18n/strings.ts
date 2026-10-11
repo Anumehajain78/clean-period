@@ -225,6 +225,15 @@ export const en = {
   compareStripTitle: 'The day, before and after',
   compareStripHelp: 'Coloured cells are the forecast PM2.5 for each hour (CPCB colours). Ochre blocks are outdoor periods; ringed blocks moved.',
   stripAir: 'Air',
+  downloadCsv: 'Download CSV',
+  printPdf: 'Print / save PDF',
+  popupBlocked: 'Allow pop-ups for this site to print.',
+  printFooter: 'Made with Clean Period. Doses are estimates; this reduces exposure, it does not make a polluted day safe.',
+  colPlace: 'Place',
+  colMovedFrom: 'Moved from',
+  downloadNew: 'Download the new timetable',
+  newTimetableTitle: 'New timetable for {date}',
+  bellCopied: "Bell times copied from the first class. Type this class's subjects, or read its timetable from a photo.",
 } as const
 
 export type Key = keyof typeof en
@@ -445,4 +454,13 @@ export const hi: Record<Key, string> = {
   compareStripTitle: 'दिन, पहले और बाद में',
   compareStripHelp: 'रंगीन खाने हर घंटे का PM2.5 पूर्वानुमान हैं (CPCB रंग)। गेरुए खाने बाहर के पीरियड हैं; घेरे वाले खाने बदले गए हैं।',
   stripAir: 'हवा',
+  downloadCsv: 'CSV डाउनलोड करें',
+  printPdf: 'प्रिंट / PDF सहेजें',
+  popupBlocked: 'प्रिंट के लिए इस साइट के पॉप-अप चालू करें।',
+  printFooter: 'Clean Period से बनाया गया। खुराक के आँकड़े अनुमान हैं; इससे प्रदूषण का असर कम होता है, पर प्रदूषित दिन सुरक्षित नहीं बनता।',
+  colPlace: 'जगह',
+  colMovedFrom: 'पहले का समय',
+  downloadNew: 'नई समय-सारणी डाउनलोड करें',
+  newTimetableTitle: '{date} की नई समय-सारणी',
+  bellCopied: 'पहली कक्षा के घंटी के समय कॉपी हो गए हैं। इस कक्षा के विषय लिखें, या इसकी समय-सारणी फ़ोटो से पढ़ें।',
 }

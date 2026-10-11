@@ -6,6 +6,7 @@ import { fmtNum, formatDate, hourOf } from '../lib/format'
 import { ACTIVITY_KEY } from './TimetableEditor'
 import { AqiChart } from './AqiChart'
 import { AirRow, DayStrip, stripRange } from './DayStrip'
+import { DownloadButtons } from './DownloadButtons'
 import { Segmented } from './ui'
 
 function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; accent?: boolean }) {
@@ -156,6 +157,29 @@ export function CompareView({ plan }: { plan: PlanVM }) {
       )}
 
       <DayCompare cls={cls} hours={plan.hours} />
+
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface px-4 py-2.5">
+        <span className="text-[15px] font-medium">{t('downloadNew')}</span>
+        <DownloadButtons
+          fileBase={`clean-period-${plan.date}`}
+          docTitle={t('newTimetableTitle', { date: formatDate(plan.date, lang) })}
+          sheets={plan.classes.map((c) => ({
+            title: c.name,
+            subtitle: `${t('doseCut')} −${fmtNum(c.cutPct)}% (${t('estimate')})`,
+            head: [t('start'), t('end'), t('subject'), t('activity'), t('colPlace'), t('colMovedFrom')],
+            rows: c.after.map((r) => [
+              r.start,
+              r.end,
+              r.subject,
+              t(ACTIVITY_KEY[r.activity]),
+              r.indoors ? t('indoors') : t('outdoors'),
+              r.movedFrom ? r.movedFrom : r.madeIndoor ? t('madeIndoor') : '',
+            ]),
+            outdoor: c.after.map((r) => !r.indoors),
+            movedCol: 5,
+          }))}
+        />
+      </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-[15px]">

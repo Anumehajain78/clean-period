@@ -6,6 +6,7 @@ import { ACTIVITIES, FIXED_ACTIVITIES, addMinutes, isIndoors, minutesBetween, ty
 import { newPeriod } from '../state/usePlanner'
 import { DayStrip, stripRange } from './DayStrip'
 import { FillDay } from './FillDay'
+import { DownloadButtons } from './DownloadButtons'
 import { PhotoImport } from './PhotoImport'
 import { Button, inputCls } from './ui'
 
@@ -84,6 +85,22 @@ export function TimetableEditor({
     outdoor: !isIndoors(p.activity),
   }))
   const range = stripRange([strip])
+  const bellsOnly =
+    cls.periods.length > 0 && cls.periods.every((p) => FIXED_ACTIVITIES.includes(p.activity) || !p.subject.trim())
+  const sheet = {
+    title: cls.name || t('unnamedClass'),
+    head: [t('start'), t('end'), t('subject'), t('activity'), t('colPlace'), t('teacher'), t('fixed')],
+    rows: cls.periods.map((p) => [
+      p.start,
+      p.end,
+      p.subject,
+      t(ACTIVITY_KEY[p.activity]),
+      isIndoors(p.activity) ? t('indoors') : t('outdoors'),
+      p.teacher,
+      FIXED_ACTIVITIES.includes(p.activity) || !p.movable ? t('fixed') : '',
+    ]),
+    outdoor: cls.periods.map((p) => !isIndoors(p.activity)),
+  }
   const outOfOrder = cls.periods.some((p, i) => i > 0 && p.start && cls.periods[i - 1].start && p.start < cls.periods[i - 1].start)
 
   return (
@@ -98,6 +115,28 @@ export function TimetableEditor({
         />
       </label>
       <p className="mt-1 text-sm text-muted">{t('timetableFor')}</p>
+
+      {mode === 'rows' && cls.periods.length > 0 && (
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-y border-line py-2">
+          <Button small onClick={() => setMode('photo')}>
+            {t('optPhotoTitle')}
+          </Button>
+          <Button small onClick={() => setMode('fill')}>
+            {t('optFillTitle')}
+          </Button>
+          <span className="flex-1" />
+          <DownloadButtons fileBase={cls.name || t('unnamedClass')} docTitle={cls.name || t('unnamedClass')} sheets={[sheet]} />
+        </div>
+      )}
+
+      {mode === 'rows' && bellsOnly && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent-wash px-4 py-3">
+          <p className="text-[15px]">{t('bellCopied')}</p>
+          <Button small variant="primary" onClick={() => setMode('photo')}>
+            {t('optPhotoTitle')}
+          </Button>
+        </div>
+      )}
 
       {range && (
         <div className="mt-5">
@@ -250,13 +289,6 @@ export function TimetableEditor({
                 {t('sortByTime')}
               </Button>
             )}
-            <span className="flex-1" />
-            <Button small variant="quiet" onClick={() => setMode('fill')}>
-              {t('optFillTitle')}
-            </Button>
-            <Button small variant="quiet" onClick={() => setMode('photo')}>
-              {t('optPhotoTitle')}
-            </Button>
           </div>
         </div>
       )}
