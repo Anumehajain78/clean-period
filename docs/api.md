@@ -89,6 +89,38 @@ Pro on Amazon Bedrock rewrites it for tone; the AI text is used only if every
 number and time in it appears in `facts` and every moved period is kept, otherwise the template comes back with
 `fallback_reason`. The UI shows which one it is.
 
+## POST /outlook and POST /backtest
+
+Body for both: the same as `POST /plan` (school, slots, classes for one day).
+
+`/outlook` plans the next 5 school days (Monday to Friday, from tomorrow) with
+the 7-day forecast:
+
+```json
+{"days": [{"date": "2026-10-12", "weekday": "monday", "status": "planned | no_forecast",
+           "verdict": "reorder", "reduction_pct": 20.6, "moved": 1,
+           "school_mean_pm25": 39.0, "school_max_pm25": 61.0, "category": "Satisfactory",
+           "hours": [{"hour": 7, "pm25": 61.0}], "cleanest": true}],
+ "source": "...", "grid_point": {}, "fetched_at": "...", "category_note": "...", "label": "...", "label_hi": "..."}
+```
+
+`moved` counts outdoor periods only. A day the forecast does not fully cover is
+`no_forecast`. The planned day with the lowest school-hours mean is `cleanest`.
+
+`/backtest` replays last winter (1 Nov 2025 to 31 Jan 2026, real hourly
+PM2.5 at the school, cached 30 days) with the same timetable every weekday:
+
+```json
+{"summary": {"school_days": 65, "all_indoors_days": 5, "season_reduction_pct": 28.9, "mean_daily_reduction_pct": 26.4},
+ "days": [{"date": "2025-11-03", "reduction_pct": 24.1, "verdict": "reorder"}], "skipped": 27,
+ "hourly_profile": [{"hour": 7, "median_pm25": 140.0, "days": 65}],
+ "period": {"start": "2025-11-01", "end": "2026-01-31"}, "source": "...", "grid_point": {},
+ "assumptions": ["..."], "assumptions_hi": ["..."], "label": "...", "label_hi": "..."}
+```
+
+Weekends are skipped; holidays are not removed (they differ by school and
+state); the assumptions list says both.
+
 ## POST /extract
 
 Body: `{"image": "<base64, data: prefix allowed>", "media_type": "image/jpeg | image/png | image/webp"}`,
