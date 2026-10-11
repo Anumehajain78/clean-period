@@ -16,7 +16,7 @@ function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; acc
       <h3 className={'mb-1.5 text-sm font-semibold ' + (accent ? 'text-accent' : 'text-muted')}>{title}</h3>
       <ul className="rounded-[4px] border border-line bg-surface">
         {rows.map((r, i) => {
-          const flagged = !!r.movedFrom || r.madeIndoor
+          const flagged = !!r.movedFrom || r.madeIndoor || r.cancelled
           return (
             <li
               key={i}
@@ -34,6 +34,7 @@ function PeriodList({ rows, title, accent }: { rows: RowVM[]; title: string; acc
                   {t(ACTIVITY_KEY[r.activity])} · {r.indoors ? t('indoors') : t('outdoors')}
                   {accent && r.movedFrom && ` · ${t('movedFrom', { time: r.movedFrom })}`}
                   {accent && r.madeIndoor && ` · ${t('madeIndoor')}`}
+                  {accent && r.cancelled && ` · ${t('activityCancelled')}`}
                 </span>
               </span>
               <span className="flex shrink-0 flex-col items-end">
@@ -67,7 +68,7 @@ function DayCompare({ cls, hours }: { cls: PlanVM['classes'][number]; hours: Pla
       end: r.end,
       subject: r.subject,
       outdoor: !r.indoors,
-      highlight: after && (!!r.movedFrom || !!r.madeIndoor),
+      highlight: after && (!!r.movedFrom || !!r.madeIndoor || !!r.cancelled),
     }))
   const before = toStrip(cls.before, false)
   const after = toStrip(cls.after, true)
@@ -87,7 +88,43 @@ function DayCompare({ cls, hours }: { cls: PlanVM['classes'][number]; hours: Pla
   )
 }
 
-export function CompareView({ plan }: { plan: PlanVM }) {
+function BadDayChoiceCard({ plan, onChoose }: { plan: PlanVM; onChoose: (c: 'indoors' | 'cancel') => void }) {
+  const { t } = useLang()
+  const bd = plan.badDay!
+  const Option = ({ id, title, body, pct }: { id: 'indoors' | 'cancel'; title: string; body: string; pct: number }) => {
+    const on = bd.choice === id
+    return (
+      <button
+        type="button"
+        aria-pressed={on}
+        onClick={() => onChoose(id)}
+        className={
+          'flex flex-col items-start gap-1 rounded-xl border p-4 text-left transition-colors ' +
+          (on ? 'border-accent bg-accent-wash ring-1 ring-accent' : 'border-line bg-surface hover:border-muted/50')
+        }
+      >
+        <span className="flex w-full items-baseline justify-between gap-2">
+          <span className="display text-[16px] font-semibold">{title}</span>
+          <span className="num shrink-0 text-lg font-semibold text-accent">−{fmtNum(pct)}%</span>
+        </span>
+        <span className="text-sm text-muted">{body}</span>
+      </button>
+    )
+  }
+  return (
+    <section className="rounded-xl border-l-4 border-l-bad bg-surface p-4" style={{ boxShadow: 'inset 0 0 0 1px var(--color-line)' }}>
+      <h3 className="display text-[17px] font-semibold">{t('badDayChoiceTitle')}</h3>
+      <p className="mt-1 text-[15px] text-muted">{t('badDayLead')}</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <Option id="indoors" title={t('badDayIndoors')} body={t('badDayIndoorsBody')} pct={bd.indoorsPct} />
+        <Option id="cancel" title={t('badDayCancel')} body={t('badDayCancelBody')} pct={bd.cancelPct} />
+      </div>
+      <p className="mt-2 text-xs text-muted">{t('badDayNote')}</p>
+    </section>
+  )
+}
+
+export function CompareView({ plan, onBadDayChoice }: { plan: PlanVM; onBadDayChoice?: (c: 'indoors' | 'cancel') => void }) {
   const { t, lang } = useLang()
   const [idx, setIdx] = useState(0)
   const [side, setSide] = useState<'after' | 'before'>('after')
@@ -156,6 +193,8 @@ export function CompareView({ plan }: { plan: PlanVM }) {
         </div>
       )}
 
+      {plan.badDay && onBadDayChoice && <BadDayChoiceCard plan={plan} onChoose={onBadDayChoice} />}
+
       <DayCompare cls={cls} hours={plan.hours} />
 
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-line bg-surface px-4 py-2.5">
@@ -173,7 +212,7 @@ export function CompareView({ plan }: { plan: PlanVM }) {
               r.subject,
               t(ACTIVITY_KEY[r.activity]),
               r.indoors ? t('indoors') : t('outdoors'),
-              r.movedFrom ? r.movedFrom : r.madeIndoor ? t('madeIndoor') : '',
+              r.movedFrom ? r.movedFrom : r.cancelled ? t('activityCancelled') : r.madeIndoor ? t('madeIndoor') : '',
             ]),
             outdoor: c.after.map((r) => !r.indoors),
             movedCol: 5,

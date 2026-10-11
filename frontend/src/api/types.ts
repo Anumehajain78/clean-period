@@ -63,6 +63,7 @@ export interface RawPeriod {
   end: string
   dose_ug: number
   converted_from?: unknown
+  cancelled?: boolean
 }
 
 export interface RawClassPlan {
@@ -92,7 +93,19 @@ export interface RawPlan {
   }
   assumptions?: string[]
   label?: string
+  /** Only on all-indoors days: cancel the outdoor activity instead of moving it indoors. */
+  alternatives?: {
+    cancel: {
+      classes: { id: string; after: RawPeriod[]; after_ug: number; reduction_pct: number }[]
+      total_after_ug: number
+      reduction_pct: number
+    }
+  }
+  /** Set by the site when the school picks the cancel option. */
+  choice?: BadDayChoice
 }
+
+export type BadDayChoice = 'indoors' | 'cancel'
 
 // ---- POST /notice ---------------------------------------------------------
 
@@ -134,6 +147,7 @@ export interface RowVM {
   dose: number
   movedFrom?: string
   madeIndoor?: boolean
+  cancelled?: boolean
 }
 
 export interface ClassVM {
@@ -157,6 +171,8 @@ export interface PlanVM {
   assumptions: string[]
   label: string
   raw: RawPlan
+  /** All-indoors days only: both options' estimated cuts and the one shown. */
+  badDay?: { choice: BadDayChoice; indoorsPct: number; cancelPct: number }
 }
 
 export interface BacktestVM {

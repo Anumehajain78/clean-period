@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { buildRequest, toPlanVM } from '../api/adapt'
+import { applyChoice, buildRequest, toPlanVM } from '../api/adapt'
 import { api, ApiError } from '../api/client'
-import type { ClassTimetable, ExtractedPeriod, NoticeResponse, Period, PlanRequest, PlanVM, School } from '../api/types'
+import type { BadDayChoice, ClassTimetable, ExtractedPeriod, NoticeResponse, Period, PlanRequest, RawPlan, School } from '../api/types'
 import type { Key } from '../i18n/strings'
 import { FIXED_ACTIVITIES, buildDay, type DayShape, uid } from '../lib/format'
 
@@ -52,7 +52,8 @@ export interface PlanError {
 export function usePlanner() {
   const [draft, setDraft] = useState<Draft>(readDraft)
   const [activeId, setActiveId] = useState<string>(() => draft.classes[0].id)
-  const [plan, setPlan] = useState<PlanVM | null>(null)
+  const [result, setResult] = useState<{ raw: RawPlan; req: PlanRequest } | null>(null)
+  const [badDayChoice, setBadDayChoiceState] = useState<BadDayChoice>('indoors')
   const [planning, setPlanning] = useState(false)
   const [error, setError] = useState<PlanError | null>(null)
   const [notice, setNotice] = useState<NoticeResponse | null>(null)
@@ -165,7 +166,8 @@ export function usePlanner() {
     try {
       const raw = await api.plan(req)
       setLastReq(req)
-      setPlan(toPlanVM(raw, req))
+      setBadDayChoiceState('indoors')
+      setResult({ raw, req })
       return true
     } catch (e) {
       if (e instanceof ApiError) {
@@ -181,6 +183,18 @@ export function usePlanner() {
       setPlanning(false)
     }
   }, [blocker, school, classes])
+
+  /** The plan as shown: the school's bad-day choice applied. */
+  const plan = useMemo(
+    () => (result ? toPlanVM(applyChoice(result.raw, badDayChoice), result.req, result.raw.reduction_pct) : null),
+    [result, badDayChoice],
+  )
+
+  const setBadDayChoice = useCallback((c: BadDayChoice) => {
+    setBadDayChoiceState(c)
+    setNotice(null) // the notice must match the choice
+    setNoticeState('idle')
+  }, [])
 
   const loadNotice = useCallback(async () => {
     if (!plan || noticeState === 'loading') return
@@ -206,6 +220,7 @@ export function usePlanner() {
     applyReading,
     blocker,
     plan,
+    setBadDayChoice,
     lastReq,
     planning,
     error,

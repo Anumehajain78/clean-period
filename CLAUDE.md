@@ -40,7 +40,11 @@ cleanest hours.
   (yoga, board games) = light, indoors.
 - All of the above lives in `backend/config/dose_config.json`. Never hard-code.
 - Bad-day rule: if no school hour is at or below the "all indoors" PM2.5
-  threshold, the plan is "all outdoor periods become indoor activity". The
+  threshold, the plan is "all outdoor periods become indoor activity", and the
+  response also offers `alternatives.cancel`: the outdoor activity is cancelled
+  and the class stays in its room (sitting, lowest dose). The school picks one
+  in the UI; downloads and the notice follow the choice. The period is kept,
+  only the activity is cancelled (decided 2026-10-11). The
   threshold is 120 ug/m3, the top of Poor, so the rule triggers when every
   school hour is Very Poor or worse (decided 2026-10-08). Thresholds follow
   CPCB National AQI (2014) PM2.5 categories, 24-hour average, ug/m3: Good 0-30,

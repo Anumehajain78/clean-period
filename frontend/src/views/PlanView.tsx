@@ -98,7 +98,7 @@ export function PlanView() {
               </Button>
             </div>
           ) : shown === 'compare' ? (
-            <CompareView plan={p.plan} />
+            <CompareView plan={p.plan} onBadDayChoice={p.setBadDayChoice} />
           ) : (
             <NoticePane p={p} />
           )}

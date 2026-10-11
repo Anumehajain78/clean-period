@@ -1,5 +1,6 @@
 import type {
   Activity,
+  BadDayChoice,
   BacktestVM,
   ClassTimetable,
   PlanRequest,
@@ -52,7 +53,24 @@ export function buildRequest(school: School, classes: ClassTimetable[]): PlanReq
 
 // --------------------------------------------------------------- response
 
-export function toPlanVM(raw: RawPlan, req: PlanRequest): PlanVM {
+/** The plan as the school chose it: on all-indoors days, optionally cancel outdoor activity. */
+export function applyChoice(raw: RawPlan, choice: BadDayChoice): RawPlan {
+  const alt = raw.alternatives?.cancel
+  if (raw.verdict !== 'all_indoors' || !alt || choice !== 'cancel') return { ...raw, choice: 'indoors' }
+  const byId = new Map(alt.classes.map((c) => [c.id, c]))
+  return {
+    ...raw,
+    classes: raw.classes.map((c) => {
+      const a = byId.get(c.id)
+      return a ? { ...c, after: a.after, after_ug: a.after_ug, reduction_pct: a.reduction_pct } : c
+    }),
+    total_after_ug: alt.total_after_ug,
+    reduction_pct: alt.reduction_pct,
+    choice: 'cancel',
+  }
+}
+
+export function toPlanVM(raw: RawPlan, req: PlanRequest, indoorsPct?: number): PlanVM {
   const pmByHour = new Map<number, number>()
   for (const h of raw.air?.hours ?? []) if (typeof h.pm25 === 'number') pmByHour.set(h.hour, h.pm25)
   const slotStart = new Map(req.slots.map((s) => [s.id, s.start]))
@@ -75,7 +93,8 @@ export function toPlanVM(raw: RawPlan, req: PlanRequest): PlanVM {
         indoors: converted || isIndoors(activity),
         pm25: pmByHour.get(hour) ?? null,
         dose: p.dose_ug,
-        madeIndoor: converted || undefined,
+        madeIndoor: (converted && !p.cancelled) || undefined,
+        cancelled: p.cancelled || undefined,
       }
     }
 
@@ -112,6 +131,10 @@ export function toPlanVM(raw: RawPlan, req: PlanRequest): PlanVM {
     assumptions: raw.assumptions ?? [],
     label: raw.label ?? '',
     raw,
+    badDay:
+      raw.verdict === 'all_indoors' && raw.alternatives
+        ? { choice: raw.choice ?? 'indoors', indoorsPct: indoorsPct ?? raw.reduction_pct, cancelPct: raw.alternatives.cancel.reduction_pct }
+        : undefined,
   }
 }
 
