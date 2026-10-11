@@ -196,5 +196,28 @@ docs/                architecture, API
 
 ## Team
 
-- **Anumeha Jain** ([@Anumehajain78](https://github.com/Anumehajain78)): backend, infrastructure, scripts
-- **Rakshit Jain** ([@rakshitjain23](https://github.com/rakshitjain23)): frontend, docs
+**Riyanshi Jain** · team lead, frontend · [@riyanshijain](https://github.com/riyanshijain)
+- Led the project: scope, planning and coordination across the team.
+- Designed and built the frontend: the Plan, Evidence and Method screens, the
+  layout and navigation, and the overall user experience.
+- Shaped the product around teachers and parents: mobile-first screens and
+  English and Hindi throughout.
+
+**Anumeha Jain** · backend · [@Anumehajain78](https://github.com/Anumehajain78)
+- Built the inhaled-dose engine and the timetable optimiser (teacher, ground and
+  fixed-period rules), and the bad-day rule with its indoors-or-cancel choice.
+- Built the air-quality pipeline: Open-Meteo forecast and history, DynamoDB
+  caching, and the last-winter backtest that is the project's evidence.
+- Built the Lambdas behind the API (plan, forecast, notice, extract, insights,
+  schools, nightly), including the parent notice and timetable-photo reading
+  with Amazon Bedrock (Nova Pro) and the code checks on every AI answer.
+- Wrote the backend test suite.
+
+**Rakshit Jain** · frontend features, deployment · [@rakshitjain23](https://github.com/rakshitjain23)
+- Built frontend features: timetable entry (fill the day, photo upload and
+  review), the before-and-after day strips, the This week and Last winter
+  views, and CSV / PDF downloads.
+- Deployed the project on AWS: SAM infrastructure, API Gateway, Lambda,
+  DynamoDB, EventBridge Scheduler and Amplify Hosting.
+- Set up continuous deployment with GitHub Actions and OIDC, and wrote the
+  README, architecture and API docs.
