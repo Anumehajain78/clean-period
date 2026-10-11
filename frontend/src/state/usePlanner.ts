@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { buildRequest, pickSampleDay, sampleToDraft, toPlanVM } from '../api/adapt'
-import { api, ApiError, loadSample } from '../api/client'
-import type { ClassTimetable, NoticeResponse, Period, PlanRequest, PlanVM, School } from '../api/types'
+import { buildRequest, toPlanVM } from '../api/adapt'
+import { api, ApiError } from '../api/client'
+import type { ClassTimetable, ExtractedPeriod, NoticeResponse, Period, PlanRequest, PlanVM, School } from '../api/types'
 import type { Key } from '../i18n/strings'
-import { FIXED_ACTIVITIES, uid } from '../lib/format'
+import { FIXED_ACTIVITIES, buildDay, type DayShape, uid } from '../lib/format'
 
-const STORE = 'cp.draft.v2'
+// v3: drafts from the sample-timetable era are not reused.
+const STORE = 'cp.draft.v3'
 
-const emptySchool: School = { name: '', lat: '', lng: '', timezone: 'Asia/Kolkata', groundCapacity: '' }
+const emptySchool: School = { name: '', place: '', lat: '', lng: '', timezone: 'Asia/Kolkata', groundCapacity: '' }
 
 export function newPeriod(start = '', end = '', activity: Period['activity'] = 'classroom'): Period {
-  return { id: uid(), start, end, subject: '', activity, teacher: '', movable: true }
+  return { id: uid(), start, end, subject: '', activity, teacher: '', movable: !FIXED_ACTIVITIES.includes(activity) }
 }
 
-function newClass(n: number): ClassTimetable {
-  return { id: uid(), name: `Class ${n}`, periods: [] }
+function newClass(): ClassTimetable {
+  return { id: uid(), name: '', periods: [] }
 }
 
 interface Draft {
@@ -32,7 +33,15 @@ function readDraft(): Draft {
   } catch {
     /* ignore */
   }
-  return { school: emptySchool, classes: [newClass(1)] }
+  return { school: emptySchool, classes: [newClass()] }
+}
+
+const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
+
+/** True when two periods of the same class share any minute. */
+function overlaps(periods: Period[]): boolean {
+  const ok = periods.filter((p) => p.start && p.end && p.end > p.start).sort((a, b) => a.start.localeCompare(b.start))
+  return ok.some((p, i) => i > 0 && toMin(p.start) < toMin(ok[i - 1].end))
 }
 
 export interface PlanError {
@@ -48,7 +57,6 @@ export function usePlanner() {
   const [error, setError] = useState<PlanError | null>(null)
   const [notice, setNotice] = useState<NoticeResponse | null>(null)
   const [noticeState, setNoticeState] = useState<'idle' | 'loading' | 'error'>('idle')
-  const [sampleDay, setSampleDay] = useState<string | null>(null)
 
   const { school, classes } = draft
 
@@ -64,24 +72,32 @@ export function usePlanner() {
 
   const setSchool = useCallback((patch: Partial<School>) => {
     setDraft((d) => ({ ...d, school: { ...d.school, ...patch } }))
-    setSampleDay(null)
   }, [])
 
   const updateClass = useCallback((id: string, fn: (c: ClassTimetable) => ClassTimetable) => {
     setDraft((d) => ({ ...d, classes: d.classes.map((c) => (c.id === id ? fn(c) : c)) }))
-    setSampleDay(null)
   }, [])
 
+  /** New class with the same bell times as the first class that has periods; subjects left blank. */
   const addClass = useCallback(() => {
-    const c = newClass(draft.classes.length + 1)
-    setDraft((d) => ({ ...d, classes: [...d.classes, c] }))
+    const c = newClass()
+    setDraft((d) => {
+      const template = d.classes.find((x) => x.periods.length)
+      if (template)
+        c.periods = template.periods.map((p) =>
+          FIXED_ACTIVITIES.includes(p.activity)
+            ? { ...newPeriod(p.start, p.end, p.activity), subject: p.subject }
+            : newPeriod(p.start, p.end),
+        )
+      return { ...d, classes: [...d.classes, c] }
+    })
     setActiveId(c.id)
-  }, [draft.classes.length])
+  }, [])
 
   const removeClass = useCallback(
     (id: string) => {
       setDraft((d) => {
-        if (d.classes.length < 2) return d
+        if (d.classes.length < 2) return { ...d, classes: [newClass()] }
         const rest = d.classes.filter((c) => c.id !== id)
         if (id === activeId) setActiveId(rest[0].id)
         return { ...d, classes: rest }
@@ -90,28 +106,36 @@ export function usePlanner() {
     [activeId],
   )
 
-  const loadSampleData = useCallback(async (): Promise<boolean> => {
-    try {
-      const s = await loadSample()
-      const day = pickSampleDay(s)
-      if (!day) return false
-      const next = sampleToDraft(s, day)
-      if (!next.classes.length) return false
-      next.classes.forEach((c) =>
-        c.periods.forEach((p) => {
-          if (FIXED_ACTIVITIES.includes(p.activity)) p.movable = false
-        }),
-      )
-      setDraft(next)
-      setActiveId(next.classes[0].id)
-      setPlan(null)
-      setNotice(null)
-      setSampleDay(day)
-      return true
-    } catch {
-      return false
-    }
-  }, [])
+  /** Replace a class's periods with a generated school day. */
+  const fillDay = useCallback(
+    (id: string, shape: DayShape) =>
+      updateClass(id, (c) => ({
+        ...c,
+        periods: buildDay(shape).map((r) =>
+          r.isBreak ? { ...newPeriod(r.start, r.end, 'recess'), subject: 'Recess' } : newPeriod(r.start, r.end),
+        ),
+      })),
+    [updateClass],
+  )
+
+  /** Use rows read from a photo for a class. */
+  const applyReading = useCallback(
+    (id: string, rows: ExtractedPeriod[], className: string) =>
+      updateClass(id, (c) => ({
+        ...c,
+        name: c.name.trim() || className,
+        periods: rows.map((r) => ({
+          id: uid(),
+          start: r.start,
+          end: r.end,
+          subject: r.subject,
+          activity: r.activity,
+          teacher: r.teacher,
+          movable: !FIXED_ACTIVITIES.includes(r.activity),
+        })),
+      })),
+    [updateClass],
+  )
 
   const lat = Number(school.lat)
   const lng = Number(school.lng)
@@ -125,6 +149,7 @@ export function usePlanner() {
     const all = classes.flatMap((c) => c.periods)
     if (all.length === 0) return 'needPeriods'
     if (all.some((p) => !p.start || !p.end || p.end <= p.start || !p.subject.trim())) return 'needPeriodFields'
+    if (classes.some((c) => overlaps(c.periods))) return 'needNoOverlap'
     return null
   }, [school, classes, lat, lng, cap])
 
@@ -177,8 +202,8 @@ export function usePlanner() {
     updateClass,
     addClass,
     removeClass,
-    loadSampleData,
-    sampleDay,
+    fillDay,
+    applyReading,
     blocker,
     plan,
     lastReq,

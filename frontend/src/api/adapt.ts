@@ -7,10 +7,9 @@ import type {
   RawPeriod,
   RawPlan,
   RowVM,
-  SampleFile,
   School,
 } from './types'
-import { WEEKDAYS, isIndoors, placeOf, tomorrowWeekday, uid } from '../lib/format'
+import { isIndoors, placeOf } from '../lib/format'
 
 // ---------------------------------------------------------------- request
 
@@ -113,54 +112,6 @@ export function toPlanVM(raw: RawPlan, req: PlanRequest): PlanVM {
     assumptions: raw.assumptions ?? [],
     label: raw.label ?? '',
     raw,
-  }
-}
-
-// ----------------------------------------------------------------- sample
-
-/** Pick tomorrow's weekday if the sample has it, else the next weekday that has lessons. */
-export function pickSampleDay(s: SampleFile): string | null {
-  const have = new Set(s.classes.flatMap((c) => Object.keys(c.days)))
-  const start = WEEKDAYS.indexOf(tomorrowWeekday())
-  for (let i = 0; i < 7; i++) {
-    const d = WEEKDAYS[(start + i) % 7]
-    if (have.has(d)) return d
-  }
-  return null
-}
-
-export function sampleToDraft(s: SampleFile, day: string): { school: School; classes: ClassTimetable[] } {
-  const slot = new Map(s.slots.map((x) => [x.id, x]))
-  const classes: ClassTimetable[] = s.classes
-    .map((c) => ({
-      id: c.id || uid(),
-      name: c.name,
-      periods: (c.days[day] ?? []).flatMap((p) => {
-        const sl = slot.get(p.slot)
-        if (!sl) return []
-        return [
-          {
-            id: uid(),
-            start: sl.start,
-            end: sl.end,
-            subject: p.subject,
-            activity: p.activity,
-            teacher: p.teacher ?? '',
-            movable: p.movable,
-          },
-        ]
-      }),
-    }))
-    .filter((c) => c.periods.length)
-  return {
-    school: {
-      name: s.school.name,
-      lat: String(s.school.latitude),
-      lng: String(s.school.longitude),
-      timezone: s.school.timezone ?? 'Asia/Kolkata',
-      groundCapacity: s.school.ground_capacity == null ? '' : String(s.school.ground_capacity),
-    },
-    classes,
   }
 }
 

@@ -73,3 +73,28 @@ export function weekdayLabel(day: string, lang: 'en' | 'hi'): string {
 export function fmtNum(n: number, digits = 0): string {
   return n.toLocaleString('en-IN', { maximumFractionDigits: digits, minimumFractionDigits: digits })
 }
+
+export interface DayShape {
+  first: string // "HH:MM"
+  length: number // minutes per period
+  count: number
+  breakAfter: number // 0 = no break
+  breakLength: number
+}
+
+/** Bell times for a whole school day, as [start, end, isBreak] rows. */
+export function buildDay(d: DayShape): { start: string; end: string; isBreak: boolean }[] {
+  const rows: { start: string; end: string; isBreak: boolean }[] = []
+  let t = d.first
+  for (let i = 1; i <= d.count; i++) {
+    const end = addMinutes(t, d.length)
+    rows.push({ start: t, end, isBreak: false })
+    t = end
+    if (d.breakAfter > 0 && i === d.breakAfter && d.breakLength > 0 && i < d.count) {
+      const bEnd = addMinutes(t, d.breakLength)
+      rows.push({ start: t, end: bEnd, isBreak: true })
+      t = bEnd
+    }
+  }
+  return rows
+}

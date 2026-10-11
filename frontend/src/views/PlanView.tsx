@@ -5,7 +5,7 @@ import { SetupRail } from '../components/SetupRail'
 import { TimetableEditor } from '../components/TimetableEditor'
 import { Button, Notice, Spinner, Tabs } from '../components/ui'
 import { useLang } from '../i18n/lang'
-import { tomorrow, weekdayLabel } from '../lib/format'
+import { tomorrow } from '../lib/format'
 import { usePlanner } from '../state/usePlanner'
 
 type Pane = 'setup' | 'timetable' | 'compare' | 'notice'
@@ -14,16 +14,9 @@ export function PlanView() {
   const { t, lang } = useLang()
   const p = usePlanner()
   const [pane, setPane] = useState<Pane>('timetable')
-  const [sampleErr, setSampleErr] = useState(false)
 
   const make = async () => {
     if (await p.makePlan()) setPane('compare')
-  }
-  const sample = async () => {
-    setSampleErr(false)
-    const ok = await p.loadSampleData()
-    if (!ok) setSampleErr(true)
-    else setPane('timetable')
   }
 
   // On wide screens the rail is always visible, so "setup" falls back to the timetable.
@@ -37,7 +30,7 @@ export function PlanView() {
           (shown === 'setup' ? 'block' : 'hidden')
         }
       >
-        <SetupRail p={p} onMake={make} onSample={sample} />
+        <SetupRail p={p} onMake={make} onPickClass={() => setPane('timetable')} />
       </aside>
 
       <section
@@ -72,26 +65,13 @@ export function PlanView() {
           )}
 
           {shown === 'timetable' || shown === 'setup' ? (
-            <div>
-              <div className="flex flex-wrap items-center justify-between gap-2 px-4 pb-1 pt-4">
-                <h2 className="text-lg font-semibold">{p.active.name || t('className')}</h2>
-                {p.sampleDay && (
-                  <span className="text-sm font-medium text-warn">
-                    {t('sampleNoteDay', { day: weekdayLabel(p.sampleDay, lang) })}
-                  </span>
-                )}
-              </div>
-              {sampleErr && (
-                <div className="px-4 pt-2">
-                  <Notice tone="warn">{t('sampleFailed')}</Notice>
-                </div>
-              )}
-              <TimetableEditor
-                cls={p.active}
-                onChange={(fn) => p.updateClass(p.active.id, fn)}
-                onLoadSample={sample}
-              />
-            </div>
+            <TimetableEditor
+              key={p.active.id}
+              cls={p.active}
+              onChange={(fn) => p.updateClass(p.active.id, fn)}
+              onFill={(shape) => p.fillDay(p.active.id, shape)}
+              onReading={(rows, name) => p.applyReading(p.active.id, rows, name)}
+            />
           ) : !p.plan ? (
             <div className="flex h-full min-h-64 flex-col items-center justify-center gap-3 px-6 text-center">
               <p className="max-w-sm text-muted">{t('noPlanYet')}</p>

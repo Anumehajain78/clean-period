@@ -24,6 +24,7 @@ export interface ClassTimetable {
 
 export interface School {
   name: string
+  place?: string // town picked in the search, shown instead of raw coordinates
   lat: string // text while typing
   lng: string
   timezone: string
@@ -104,32 +105,21 @@ export interface NoticeResponse {
   label?: string
 }
 
-// ---- Static data files ----------------------------------------------------
+// ---- POST /extract ----------------------------------------------------------
 
-export interface SampleFile {
-  school: {
-    name: string
-    latitude: number
-    longitude: number
-    timezone?: string
-    ground_capacity?: number | null
-  }
-  slots: { id: string; start: string; end: string }[]
-  classes: {
-    id: string
-    name: string
-    days: Record<
-      string,
-      {
-        slot: string
-        subject: string
-        activity: Activity
-        teacher: string | null
-        place: Place
-        movable: boolean
-      }[]
-    >
-  }[]
+export interface ExtractedPeriod {
+  start: string
+  end: string
+  subject: string
+  activity: Activity
+  teacher: string
+}
+
+export interface ExtractResponse {
+  class_name: string
+  days: Record<string, ExtractedPeriod[]>
+  dropped: number
+  note: string
 }
 
 // ---- What the screens use -------------------------------------------------
