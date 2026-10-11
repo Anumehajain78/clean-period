@@ -97,6 +97,28 @@ Resources:
           Type: HttpApi
           Properties: {ApiId: !Ref Api, Path: /notice, Method: POST}
 
+  # Reads a timetable photo into rows for the teacher to check (Amazon Nova Pro).
+  ExtractFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.extract.app.handler
+      Timeout: 29           # HTTP API integrations time out at 30 s; a read takes ~20 s
+      MemorySize: 512
+      Environment:
+        Variables:
+          EXTRACT_MODEL: apac.amazon.nova-pro-v1:0
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/apac.amazon.nova-pro-v1:0
+                - arn:aws:bedrock:*::foundation-model/amazon.nova-pro-v1:0
+      Events:
+        Post:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /extract, Method: POST}
+
   SchoolsFunction:
     Type: AWS::Serverless::Function
     Properties:
