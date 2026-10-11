@@ -89,6 +89,27 @@ Pro on Amazon Bedrock rewrites it for tone; the AI text is used only if every
 number and time in it appears in `facts` and every moved period is kept, otherwise the template comes back with
 `fallback_reason`. The UI shows which one it is.
 
+## POST /extract
+
+Body: `{"image": "<base64, data: prefix allowed>", "media_type": "image/jpeg | image/png | image/webp"}`,
+at most 3.5 MB after decoding (the site shrinks photos first).
+
+```json
+{
+  "class_name": "VI - B",
+  "days": {"monday": [{"start": "07:40", "end": "08:00", "subject": "Assembly", "activity": "assembly", "teacher": ""}]},
+  "dropped": 0,
+  "note": "Read by AI from the photo. Check every row against the timetable before planning."
+}
+```
+
+Amazon Nova Pro reads the photo; `core/extract.py` keeps only rows with valid
+24-hour times, an end after the start and a subject, sorts them, and counts
+the rest in `dropped`. Activities missing or unknown are guessed from the
+subject (PE, games, assembly, break, yoga). A read takes about 20 s.
+Errors: 400 bad input, 413 photo too large, 422 nothing found, 502 the model
+could not read it, 503 reading switched off.
+
 ## Saved schools and the nightly plan
 
 No accounts. Saving a school returns a secret `edit_key` once; only its hash is
