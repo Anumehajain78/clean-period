@@ -73,7 +73,10 @@ export function Tabs<T extends string>({
             type="button"
             aria-selected={on}
             disabled={it.disabled}
-            onClick={() => onChange(it.id)}
+            onClick={(e) => {
+              onChange(it.id)
+              e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+            }}
             className={
               'relative h-11 whitespace-nowrap px-3 text-[15px] font-medium disabled:text-muted/50 ' +
               (on ? 'text-accent' : 'text-muted hover:text-ink') +

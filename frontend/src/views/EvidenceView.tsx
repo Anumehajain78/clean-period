@@ -6,7 +6,7 @@ import { Button, Notice, Spinner } from '../components/ui'
 import { useLang } from '../i18n/lang'
 import { fmtNum } from '../lib/format'
 
-function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
+export function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
   const { t, lang } = useLang()
   const W = 640
   const H = 190
@@ -61,7 +61,7 @@ function DailyCutChart({ data }: { data: BacktestVM['days'] }) {
   )
 }
 
-function Stat({ label, value, help, big }: { label: string; value: string; help?: string; big?: boolean }) {
+export function Stat({ label, value, help, big }: { label: string; value: string; help?: string; big?: boolean }) {
   return (
     <div className="border-l-2 border-line pl-3">
       <p className="text-[13px] font-medium text-muted">{label}</p>

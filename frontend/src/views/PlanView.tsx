@@ -3,12 +3,14 @@ import { CompareView } from '../components/CompareView'
 import { NoticePane } from '../components/NoticePane'
 import { SetupRail } from '../components/SetupRail'
 import { TimetableEditor } from '../components/TimetableEditor'
+import { WeekView } from '../components/WeekView'
+import { WinterView } from '../components/WinterView'
 import { Button, Notice, Spinner, Tabs } from '../components/ui'
 import { useLang } from '../i18n/lang'
 import { tomorrow } from '../lib/format'
 import { usePlanner } from '../state/usePlanner'
 
-type Pane = 'setup' | 'timetable' | 'compare' | 'notice'
+type Pane = 'setup' | 'timetable' | 'compare' | 'week' | 'winter' | 'notice'
 
 export function PlanView() {
   const { t, lang } = useLang()
@@ -46,6 +48,8 @@ export function PlanView() {
               { id: 'timetable', label: t('paneTimetable') },
               { id: 'compare', label: t('paneCompare') },
               { id: 'notice', label: t('paneNotice') },
+              { id: 'week', label: t('paneWeek') },
+              { id: 'winter', label: t('paneWinter') },
             ]}
             className="-ml-1 overflow-x-auto"
           />
@@ -72,6 +76,10 @@ export function PlanView() {
               onFill={(shape) => p.fillDay(p.active.id, shape)}
               onReading={(rows, name) => p.applyReading(p.active.id, rows, name)}
             />
+          ) : shown === 'week' ? (
+            <WeekView p={p} />
+          ) : shown === 'winter' ? (
+            <WinterView p={p} />
           ) : !p.plan ? (
             <div className="flex h-full min-h-64 flex-col items-center justify-center gap-3 px-6 text-center">
               <p className="max-w-sm text-muted">{t('noPlanYet')}</p>

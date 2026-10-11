@@ -98,3 +98,8 @@ export function buildDay(d: DayShape): { start: string; end: string; isBreak: bo
   }
   return rows
 }
+
+/** "1 Nov 2025" style, for date ranges. */
+export function formatDay(iso: string, lang: 'en' | 'hi'): string {
+  return new Date(iso + 'T00:00:00').toLocaleDateString(loc(lang), { day: 'numeric', month: 'short', year: 'numeric' })
+}
