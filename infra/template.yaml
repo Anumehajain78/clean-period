@@ -97,6 +97,22 @@ Resources:
           Type: HttpApi
           Properties: {ApiId: !Ref Api, Path: /notice, Method: POST}
 
+  # This week (7-day forecast) and last winter (history) for the teacher's own timetable.
+  InsightsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: functions.insights.app.handler
+      MemorySize: 512
+      Policies:
+        - DynamoDBCrudPolicy: {TableName: !Ref Table}
+      Events:
+        Outlook:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /outlook, Method: POST}
+        Backtest:
+          Type: HttpApi
+          Properties: {ApiId: !Ref Api, Path: /backtest, Method: POST}
+
   # Reads a timetable photo into rows for the teacher to check (Amazon Nova Pro).
   ExtractFunction:
     Type: AWS::Serverless::Function

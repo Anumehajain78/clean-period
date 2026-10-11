@@ -8,6 +8,8 @@ Saved schools live in memory and are lost when the server stops.
     POST /plan   (JSON body, see docs/api.md)
     POST /notice (template only, unless NOTICE_USE_AI=1: then it calls Amazon Bedrock)
     POST /schools, GET|PUT /schools/<id>, GET /schools/<id>/plans/latest
+    POST /outlook, POST /backtest (this week, and last winter, for a timetable)
+    POST /extract (reads a timetable photo with Amazon Bedrock)
     POST /_nightly  (dev only: runs the 19:00 nightly job now)
 """
 
@@ -25,6 +27,8 @@ os.environ.pop("TABLE_NAME", None)
 os.environ.setdefault("NOTICE_USE_AI", "0")
 
 from functions.forecast import app as forecast_app  # noqa: E402
+from functions.insights import app as insights_app  # noqa: E402
+from functions.extract import app as extract_app  # noqa: E402
 from functions.notice import app as notice_app  # noqa: E402
 from functions.common import forecast as fc  # noqa: E402
 from functions.common.store import MemoryStore  # noqa: E402
@@ -96,7 +100,9 @@ class Handler(BaseHTTPRequestHandler):
                                "body": json.dumps(summary)})
         if self._school("POST"):
             return
-        handler = {"/plan": plan_app.handler, "/notice": notice_app.handler}.get(path)
+        if path in ("/outlook", "/backtest"):
+            return self._send(insights_app.handler({"routeKey": f"POST {path}", "body": self._body()}, None))
+        handler = {"/plan": plan_app.handler, "/notice": notice_app.handler, "/extract": extract_app.handler}.get(path)
         if handler is None:
             return self._send({"statusCode": 404, "body": json.dumps({"error": "not found"})})
         self._send(handler({"body": self._body()}, None))

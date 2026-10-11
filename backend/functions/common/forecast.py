@@ -44,24 +44,24 @@ def local_tomorrow(utc_offset_seconds, now=None):
     return (local.date() + timedelta(days=1)).isoformat()
 
 
-def get_forecast(lat, lon, tz, cache=None, fetch=fetch_json, now=None):
+def get_forecast(lat, lon, tz, cache=None, fetch=fetch_json, now=None, days=FORECAST_DAYS):
     """{"days": {date: [24 values]}, "utc_offset_seconds", "grid_point", "fetched_at",
     "source", "url", "cached"}"""
     now = now if now is not None else time.time()
-    key = cache_key(lat, lon, tz)
+    key = cache_key(lat, lon, tz) + ("" if days == FORECAST_DAYS else f"#{days}d")
     if cache:
         hit = cache.get(key)
         if hit and hit["expires_at"] > now:
             return {**hit["data"], "cached": True}
 
-    url = openmeteo.forecast_url(lat, lon, days=FORECAST_DAYS, timezone=tz)
+    url = openmeteo.forecast_url(lat, lon, days=days, timezone=tz)
     raw = fetch(url)
     try:
-        days = openmeteo.hourly_by_date(raw)
+        by_date = openmeteo.hourly_by_date(raw)
     except ValueError as e:
         raise UpstreamError(str(e)) from e
     data = {
-        "days": {d: [hours.get(h) for h in range(24)] for d, hours in sorted(days.items())},
+        "days": {d: [hours.get(h) for h in range(24)] for d, hours in sorted(by_date.items())},
         "utc_offset_seconds": raw["utc_offset_seconds"],
         "grid_point": {"latitude": raw.get("latitude"), "longitude": raw.get("longitude")},
         "fetched_at": iso_utc(now),
@@ -70,6 +70,34 @@ def get_forecast(lat, lon, tz, cache=None, fetch=fetch_json, now=None):
     }
     if cache:
         cache.put(key, data, now + CACHE_SECONDS)
+    return {**data, "cached": False}
+
+
+HISTORY_CACHE_SECONDS = 30 * 24 * 3600  # past data does not change
+
+
+def get_history(lat, lon, tz, start, end, cache=None, fetch=fetch_json, now=None):
+    """Past hourly PM2.5: {"days": {date: [24 values]}, "grid_point", "source", "url", "cached"}."""
+    now = now if now is not None else time.time()
+    key = f"HISTORY#{lat:.2f}#{lon:.2f}#{tz}#{start}#{end}"
+    if cache:
+        hit = cache.get(key)
+        if hit and hit["expires_at"] > now:
+            return {**hit["data"], "cached": True}
+    url = openmeteo.history_url(lat, lon, start, end, timezone=tz)
+    raw = fetch(url)
+    try:
+        days = openmeteo.hourly_by_date(raw)
+    except ValueError as e:
+        raise UpstreamError(str(e)) from e
+    data = {
+        "days": {d: [hours.get(h) for h in range(24)] for d, hours in sorted(days.items())},
+        "grid_point": {"latitude": raw.get("latitude"), "longitude": raw.get("longitude")},
+        "source": openmeteo.ATTRIBUTION,
+        "url": url,
+    }
+    if cache:
+        cache.put(key, data, now + HISTORY_CACHE_SECONDS)
     return {**data, "cached": False}
 
 
